@@ -1,0 +1,9 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  thymeleaf:
+    prefix: file:src/main/resources/templates/
+  web:
+    resources:
+      static-locations: file:src/main/resources/static/
