@@ -27,7 +27,7 @@ public class Sample {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "ENUM")
+    @Column(nullable = false, columnDefinition = "enum('ON', 'OFF')")
     private SampleStatus status;
 
     @CreationTimestamp
