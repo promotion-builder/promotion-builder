@@ -1,59 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>테스트 페이지</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <title>프로모션 빌더 벗&에디</title>
 </head>
 <body>
-
 <div>
     <div>
-        아이디 : <input type="text" id="username"/>
+        <span>
+            아이디
+        </span>
+        <input id="id"/>
     </div>
     <div>
-        비밀번호 : <input type="text" id="password"/>
+        <span>
+            비밀번호
+        </span>
+        <input id="password">
+
     </div>
     <div>
-        <input type="button" id="login" value="로그인" onclick="login()"/>
+        <button>로그인</button>
     </div>
 </div>
+
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"
+        integrity="sha512-b94Z6431JyXY14iSXwgzeZurHHRNkLt9d6bAHt7BZT38eqV+GyngIi/tVye4jBKPYQ2lBdRs0glww4fmpuLRwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
-    function login() {
+    const axios = require('axios');
 
-        axios.post("http://localhost:8080/api/user/login", {
-            "username" : document.getElementById("username").value,
-            "password" : document.getElementById("password").value
-        }).then((response) => {
-            if (response.status === 200) {
-                window.response = response;
+    axios.get("http://localhost:8080", function (_response) {
+        console.log(_response);
+    });
 
-                localStorage.setItem("authorization", response.headers.getAuthorization());
-                localStorage.setItem("username", document.getElementById("username").value);
-                Swal.fire({
-                    icon: 'success',
-                    title: '성공!',
-                    text: '작업이 성공적으로 완료되었습니다.'
-                }).then(function (response) {
-                    if (response.isConfirmed) window.location.href = "http://localhost:8080/user/main";
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: '실패!',
-                    text: '작업을 완료할 수 없습니다. 오류가 발생했습니다.'
-                });
-            }
-        }).catch( error => {
-            Swal.fire({
-                icon: 'error',
-                title: '실패!',
-                text: '작업을 완료할 수 없습니다. 오류가 발생했습니다.'
-            });
-        })
-    }
 </script>
 </html>

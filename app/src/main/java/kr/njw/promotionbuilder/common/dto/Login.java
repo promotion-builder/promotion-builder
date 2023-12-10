@@ -12,6 +12,7 @@ import lombok.*;
 public class Login {
     private String username;
     private String password;
+    private Role role;
 
     public static Login init(String username,
                              String password

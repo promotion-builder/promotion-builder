@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Configuration
 class RestTemplateConfig {
+
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder

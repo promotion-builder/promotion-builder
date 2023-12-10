@@ -7,3 +7,12 @@ spring:
   web:
     resources:
       static-locations: file:src/main/resources/static/
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+imagekit:
+  private-key: ${IMAGE_PRIVATE_KEY}
+  authentication-endpoint: https://api.imagekit.io/v1/auth
+  public-key: ${IMAGE_PUBLIC_KEY}
+  url-endpoint: https://ik.imagekit.io/ktest92

@@ -3,7 +3,7 @@ package kr.njw.promotionbuilder.user.controller.dto;
 
 import lombok.*;
 
-@Data
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder

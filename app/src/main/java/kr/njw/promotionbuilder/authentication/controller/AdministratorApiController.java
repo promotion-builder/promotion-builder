@@ -8,8 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import kr.njw.promotionbuilder.authentication.application.AuthenticationService;
 import kr.njw.promotionbuilder.authentication.application.dto.TokenResponse;
-import kr.njw.promotionbuilder.authentication.controller.dto.FindTokenApiRequest;
 import kr.njw.promotionbuilder.authentication.controller.dto.ReFindTokenApiRequest;
+import kr.njw.promotionbuilder.authentication.controller.dto.FindTokenApiRequest;
 import kr.njw.promotionbuilder.common.dto.BaseResponse;
 import kr.njw.promotionbuilder.common.dto.Login;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class AdministratorApiController {
 
     private final AuthenticationService authenticationService;
 
-    @Operation(summary = "토큰 발급", description = "")
+    @Operation(summary = "로그인", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "302"),
