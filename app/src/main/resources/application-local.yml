@@ -4,32 +4,9 @@ spring:
       on-profile: local
   thymeleaf:
     prefix: file:src/main/resources/templates/
-    suffix: .html
-    mode: HTML5
-    check-template-location: true
-    cache: false
   web:
     resources:
       static-locations: file:src/main/resources/static/
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: eddy
-    url : "jdbc:mysql://localhost:3306/promotion"
   jpa:
     hibernate:
-      ddl-auto: validate
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    show-sql: true
-    generate-ddl: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-        use_sql_comments: true
-        format_sql: true
-
-app:
-  security:
-    jwt-secret: ${APP_JWT_SECRET}
-    jwt-token-duration-seconds: ${APP_JWT_TOKEN_DURATION_SECONDS}
+      ddl-auto: create

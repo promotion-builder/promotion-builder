@@ -1,10 +1,10 @@
-package kr.njw.promotionbuilder.user.controller.presentation;
+package kr.njw.promotionbuilder.user.controller.dto;
 
 
 import lombok.Data;
 
 @Data
 public class UserSignUp {
-    private String id;
+    private String username;
     private String password;
 }

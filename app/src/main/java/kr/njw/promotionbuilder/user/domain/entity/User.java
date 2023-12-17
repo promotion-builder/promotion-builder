@@ -1,37 +1,48 @@
 package kr.njw.promotionbuilder.user.domain.entity;
 
 import jakarta.persistence.*;
-import kr.njw.promotionbuilder.user.enums.UserStatus;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "promotion_user")
-@Setter
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
+@ToString
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "int", name = "pu_index")
-    private Integer index;
+    private Long index;
 
-    @Column(columnDefinition = "varchar(100) default ''", nullable = false, name = "pu_id")
-    private String id;
+    @Column(length = 100, nullable = false)
+    private String username;
 
-    @Column(columnDefinition = "varchar(100) default ''", nullable = false, name = "pu_password")
+    @Column(length = 100, nullable = false)
     private String password;
 
-    @Column(columnDefinition = "enum('ACTIVE', 'DEACTIVATE', 'DELETED') default 'ACTIVE'",nullable = false,
-    name = "pu_status")
+    @Column(columnDefinition = "ENUM('ACTIVE', 'DEACTIVATE', 'DELETED') default 'ACTIVE'",nullable = false)
     private UserStatus status;
 
     @CreationTimestamp
-    private LocalDateTime registerTime;
+    private LocalDateTime createAt;
 
     @UpdateTimestamp
-    private LocalDateTime updateTime;
+    private LocalDateTime updateAt;
+
+    private LocalDateTime deletedAt;
+
+    public void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    public enum UserStatus {
+        ACTIVE,
+        DEACTIVATE,
+        DELETED
+    }
 }

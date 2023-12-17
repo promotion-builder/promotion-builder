@@ -1,6 +1,7 @@
 package kr.njw.promotionbuilder.common.dto;
 
 
+import kr.njw.promotionbuilder.common.security.Role;
 import lombok.*;
 
 
@@ -11,11 +12,16 @@ import lombok.*;
 public class Login {
     private String memberId;
     private String password;
+    private Role role;
 
-    public static Login init(String memberId, String password) {
+    public static Login init(String memberId,
+                             String password,
+                             String role
+    ) {
         return Login.builder()
                 .memberId(memberId)
                 .password(password)
+                .role(Role.valueOf(role))
                 .build();
     }
 }

@@ -1,22 +1,7 @@
 package kr.njw.promotionbuilder.user.services;
 
+import kr.njw.promotionbuilder.user.controller.dto.UserSignUp;
 
-import jakarta.transaction.Transactional;
-import kr.njw.promotionbuilder.user.controller.presentation.UserSignUp;
-import kr.njw.promotionbuilder.user.domain.entity.User;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
-@Service
-@RequiredArgsConstructor
-public class UserService {
-
-    @Transactional(rollbackOn = Exception.class)
-    public void signUp(UserSignUp userSignUp) {
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        User user = new User();
-        user.setId(userSignUp.getId());
-        user.setPassword(bCryptPasswordEncoder.encode(userSignUp.getPassword()));
-    }
+public interface UserService {
+    public void signUp(UserSignUp userSignUp);
 }

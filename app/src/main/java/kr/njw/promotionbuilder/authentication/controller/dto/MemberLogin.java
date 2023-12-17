@@ -1,4 +1,4 @@
-package kr.njw.promotionbuilder.common.controller.presentation.request;
+package kr.njw.promotionbuilder.authentication.controller.dto;
 
 
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package kr.njw.promotionbuilder.authentication.dto;
+package kr.njw.promotionbuilder.authentication.controller.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
