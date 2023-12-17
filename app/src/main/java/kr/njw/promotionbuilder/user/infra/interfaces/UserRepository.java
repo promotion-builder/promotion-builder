@@ -1,4 +1,4 @@
-package kr.njw.promotionbuilder.user.infra;
+package kr.njw.promotionbuilder.user.infra.interfaces;
 
 
 import kr.njw.promotionbuilder.user.domain.entity.User;
