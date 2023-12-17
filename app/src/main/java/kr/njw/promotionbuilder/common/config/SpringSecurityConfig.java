@@ -30,7 +30,10 @@ public class SpringSecurityConfig {
     @Order(1)
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .securityMatcher("/v3/api-docs*/**", "/swagger-ui*/**", "/actuator/**");
+                .securityMatcher(
+                        "/v3/api-docs*/**",
+                        "/swagger-ui*/**",
+                        "/actuator/**");
 
         httpSecurity
                 .authorizeHttpRequests()
@@ -55,6 +58,7 @@ public class SpringSecurityConfig {
         httpSecurity
                 .authorizeHttpRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+
                 .anyRequest().permitAll();
 
         httpSecurity
