@@ -9,6 +9,7 @@ import kr.njw.promotionbuilder.authentication.services.AuthenticationService;
 import kr.njw.promotionbuilder.authentication.services.AuthenticationServiceImpl;
 import kr.njw.promotionbuilder.authentication.controller.dto.MemberLogin;
 import kr.njw.promotionbuilder.common.dto.Login;
+import kr.njw.promotionbuilder.common.security.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -45,7 +46,9 @@ public class AdministratorApiController {
       log.info("member login = {}", memberLogin.getMemberId());
       authenticationService.login(
               Login.init(
-              memberLogin.getMemberId(),
-                      memberLogin.getPassword()));
+                      memberLogin.getMemberId(),
+                      memberLogin.getPassword(),
+                      Role.
+              ));
     }
 }
