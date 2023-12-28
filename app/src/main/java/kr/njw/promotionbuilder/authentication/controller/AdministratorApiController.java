@@ -7,9 +7,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import kr.njw.promotionbuilder.authentication.services.AuthenticationService;
 import kr.njw.promotionbuilder.authentication.services.AuthenticationServiceImpl;
-import kr.njw.promotionbuilder.authentication.controller.dto.MemberLogin;
+import kr.njw.promotionbuilder.authentication.controller.dto.MemberLoginApiRequest;
 import kr.njw.promotionbuilder.common.dto.Login;
-import kr.njw.promotionbuilder.common.security.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -33,7 +32,6 @@ public class AdministratorApiController {
 
     @Operation(summary = "로그인", description = """
             로그인 후 토큰 발급
-            accessToken이 있어야 요청 가능
             """)
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
@@ -42,13 +40,11 @@ public class AdministratorApiController {
             @ApiResponse(responseCode = "404", content = @Content())
     })
     @PostMapping("/login")
-    public void login(@RequestBody MemberLogin memberLogin) {
-      log.info("member login = {}", memberLogin.getMemberId());
-      authenticationService.login(
-              Login.init(
-                      memberLogin.getMemberId(),
-                      memberLogin.getPassword(),
-                      Role.
-              ));
+    public void login(@RequestBody MemberLoginApiRequest memberLogin) {
+      authenticationService.login(Login.init(
+              memberLogin.getMemberId(),
+              memberLogin.getPassword(),
+              memberLogin.getRole().getValue()
+      ));
     }
 }
