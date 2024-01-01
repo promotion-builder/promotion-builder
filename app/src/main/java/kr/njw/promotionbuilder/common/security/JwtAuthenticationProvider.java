@@ -65,7 +65,7 @@ public class JwtAuthenticationProvider {
                 .setExpiration(getExpireDateRefreshToken())
                 .setClaims(claims)
                 .setIssuedAt(new Date())
-                .signWith(generateSecretKey(this.secret, "HS256"))
+                .signWith(generateSecretKey(this.secret, "HMACSHA256"))
                 .compact();
     }
 
