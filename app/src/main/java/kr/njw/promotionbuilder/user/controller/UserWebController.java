@@ -1,24 +1,27 @@
 package kr.njw.promotionbuilder.user.controller;
 
-import kr.njw.promotionbuilder.user.controller.dto.UserSignUp;
+import kr.njw.promotionbuilder.user.controller.dto.CreateUserResponse;
+import kr.njw.promotionbuilder.user.controller.dto.UserSignUpRequest;
 import kr.njw.promotionbuilder.user.services.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.net.URI;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/v1/user")
 public class UserWebController {
 
     private final UserServiceImpl userService;
 
-    @GetMapping("/login")
-    public void login(@SessionAttribute(name ="userId", required = false) String userId) {}
-
-    @PostMapping("/signup")
-    public void signUp(UserSignUp signUp) {
-        userService.signUp(signUp);
+    @PostMapping(value = "/signUp", produces = "application/json; charset=UTF-8")
+    public ResponseEntity<Object> signUp(@RequestBody UserSignUpRequest userSignUpRequest) {
+        CreateUserResponse createUserResponse = userService.signUp(userSignUpRequest);
+        return ResponseEntity.created(URI.create("/v1/user/"+createUserResponse.getId())).build();
     }
 }

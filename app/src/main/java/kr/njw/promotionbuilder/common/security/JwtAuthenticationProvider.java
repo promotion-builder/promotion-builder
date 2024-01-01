@@ -13,6 +13,11 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,6 +32,46 @@ public class JwtAuthenticationProvider {
                                      @Value("${app.security.jwt-token-duration-seconds}") long durationSeconds) {
         this.secret = Base64.getEncoder().encodeToString(secret.getBytes());
         this.durationSeconds = durationSeconds;
+    }
+
+    public static Key generateKey() throws NoSuchAlgorithmException {
+        // Key를 생성할 때 사용할 알고리즘 (예: HMACSHA256)
+        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+
+        // Key를 생성하는 데 사용할 랜덤 바이트 생성
+        byte[] apiKeySecretBytes = new byte[256];
+        SecureRandom secureRandom = new SecureRandom();
+        secureRandom.nextBytes(apiKeySecretBytes);
+
+        // 생성된 바이트 배열로 Key 객체 생성
+        return new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
+    }
+
+    public static SecretKey generateSecretKey(String keyString, String algorithm) {
+        // Base64 디코딩
+        byte[] decodedKey = Base64.getDecoder().decode(keyString);
+
+        // SecretKeySpec을 사용하여 SecretKey 생성
+        SecretKey secretKey = new SecretKeySpec(decodedKey, algorithm);
+
+        return secretKey;
+    }
+
+    public String getRefreshToken(String username, List<Role> roles) {
+        Claims claims = Jwts.claims().setSubject(username);
+        claims.put(AUTHORITIES_KEY, roles.stream().map(Role::toAuthority).collect(Collectors.toList()));
+
+        return Jwts.builder()
+                .setExpiration(getExpireDateRefreshToken())
+                .setClaims(claims)
+                .setIssuedAt(new Date())
+                .signWith(generateSecretKey(this.secret, "HS256"))
+                .compact();
+    }
+
+    private Date getExpireDateRefreshToken() {
+        long expireTimeMils = 1000L * 60 * 60 * 24 * 60;
+        return new Date(System.currentTimeMillis() + expireTimeMils);
     }
 
     public String createToken(String username, List<Role> roles) {
