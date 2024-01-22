@@ -15,6 +15,9 @@ spring:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+  data:
+    mongodb:
+      uri: ${APP_MONGO_DB_URI}
   security:
     user:
       name: ${APP_SECURITY_USERNAME}

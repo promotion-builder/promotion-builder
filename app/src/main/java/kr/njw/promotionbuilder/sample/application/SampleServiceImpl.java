@@ -22,7 +22,7 @@ public class SampleServiceImpl implements SampleService {
 
     @Override
     public FindSamplesResponse findSamples(FindSamplesRequest request) {
-        final int MAX_PAGING_SIZE = 100;
+        final int MAX_PAGING_SIZE = 1000;
 
         Page<Sample> samplePage = this.sampleRepository.findByDeletedAtNullOrderByIdDesc(PageRequest.of(request.getPage() - 1, Math.min(request.getPagingSize(), MAX_PAGING_SIZE)));
 

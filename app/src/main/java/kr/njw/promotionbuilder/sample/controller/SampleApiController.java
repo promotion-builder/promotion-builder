@@ -40,9 +40,9 @@ public class SampleApiController {
             @RequestParam(value = "page", defaultValue = "1")
             Integer page,
 
-            @Parameter(description = "페이징 사이즈 (최대 20)")
+            @Parameter(description = "페이징 사이즈 (최대 50)")
             @Min(value = 1, message = "must be greater than or equal to 1")
-            @Max(value = 100, message = "must be less than or equal to 20")
+            @Max(value = 50, message = "must be less than or equal to 50")
             @RequestParam(value = "pagingSize", defaultValue = "20")
             Integer pagingSize
     ) {

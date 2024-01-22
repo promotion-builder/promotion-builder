@@ -9,6 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.event.Level;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -30,6 +33,9 @@ import java.util.Objects;
 @Slf4j
 @RestControllerAdvice
 public class ControllerExceptionAdvice {
+    @Autowired
+    private Environment environment;
+
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<BaseResponse<?>> handleHttpMethodException(HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
         this.logException(Level.INFO, e, request);
@@ -124,6 +130,10 @@ public class ControllerExceptionAdvice {
     }
 
     private void logException(Level level, Exception e, HttpServletRequest request) {
+        if (level == Level.ERROR || !this.environment.acceptsProfiles(Profiles.of("prod"))) {
+            log.atLevel(level).log(e.getMessage(), e);
+        }
+
         log.atLevel(level).log("[{}] method: {} | url: {} | message: {}",
                 e.getClass().getName(), request.getMethod(), UriComponentsBuilder.fromHttpRequest(new ServletServerHttpRequest(request)).build().toUriString(), e.getMessage());
     }
