@@ -1,0 +1,22 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: none
+  devtools:
+    livereload:
+      enabled: false
+    restart:
+      enabled: false
+
+server:
+  error:
+    whitelabel:
+      enabled: false
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false
