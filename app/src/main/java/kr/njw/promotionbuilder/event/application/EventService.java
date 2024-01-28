@@ -10,4 +10,8 @@ public interface EventService {
     Optional<FindEventResponse> findEvent(FindEventRequest request);
 
     CreateEventResponse createEvent(CreateEventRequest request);
+
+    EditEventResponse editEvent(EditEventRequest request);
+
+    void deleteEvent(DeleteEventRequest request);
 }

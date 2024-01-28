@@ -5,5 +5,5 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class CreateEventApiRequest extends SaveEventApiBaseRequest {
+public class EditEventApiRequest extends SaveEventApiBaseRequest {
 }

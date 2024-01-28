@@ -15,6 +15,7 @@ import kr.njw.promotionbuilder.common.exception.BaseException;
 import kr.njw.promotionbuilder.event.application.EventService;
 import kr.njw.promotionbuilder.event.application.dto.*;
 import kr.njw.promotionbuilder.event.controller.dto.CreateEventApiRequest;
+import kr.njw.promotionbuilder.event.controller.dto.EditEventApiRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -95,10 +96,7 @@ public class EventApiController {
     }
 
     // @SecurityRequirement(name = "accessToken")
-    @Operation(summary = "이벤트 생성", description = """
-            이벤트 생성
-
-            accessToken이 있어야 요청 가능""")
+    @Operation(summary = "이벤트 생성", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "403", content = @Content())
@@ -106,10 +104,6 @@ public class EventApiController {
     @PostMapping("")
     public ResponseEntity<BaseResponse<CreateEventResponse>> createEvent(Principal principal,
                                                                          @Valid @RequestBody CreateEventApiRequest apiRequest) {
-//        if (principal == null) {
-//            throw new BaseException(BaseResponseStatus.FORBIDDEN);
-//        }
-
         CreateEventRequest request = new CreateEventRequest();
         // TODO: 유저 아이디 설정
         request.setUserId(3L);
@@ -122,5 +116,60 @@ public class EventApiController {
         request.setEndDateTime(apiRequest.getEndDateTime());
 
         return ResponseEntity.ok(new BaseResponse<>(this.eventService.createEvent(request)));
+    }
+
+    // @SecurityRequirement(name = "accessToken")
+    @Operation(summary = "이벤트 수정", description = "")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "403", content = @Content()),
+            @ApiResponse(responseCode = "404", content = @Content())
+    })
+    @PutMapping("/{eventId}")
+    public ResponseEntity<BaseResponse<EditEventResponse>> editEvent(
+            Principal principal,
+
+            @Parameter(description = "이벤트 ID", example = "65adadbbcc0c842e20eafd41")
+            @PathVariable("eventId")
+            String eventId,
+
+            @Valid @RequestBody EditEventApiRequest apiRequest
+    ) {
+        EditEventRequest request = new EditEventRequest();
+        request.setId(eventId);
+        // TODO: 유저 아이디 설정
+        request.setUserId(3L);
+        request.setTitle(apiRequest.getTitle());
+        request.setDescription(apiRequest.getDescription());
+        request.setBannerImage(apiRequest.getBannerImage());
+        request.setBlocks(apiRequest.getBlocks());
+        request.setGrades(apiRequest.getGrades());
+        request.setStartDateTime(apiRequest.getStartDateTime());
+        request.setEndDateTime(apiRequest.getEndDateTime());
+
+        return ResponseEntity.ok(new BaseResponse<>(this.eventService.editEvent(request)));
+    }
+
+    // @SecurityRequirement(name = "accessToken")
+    @Operation(summary = "이벤트 삭제", description = "")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+    })
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<BaseResponse<Boolean>> deleteEvent(
+            Principal principal,
+
+            @Parameter(description = "이벤트 ID", example = "65adadbbcc0c842e20eafd41")
+            @PathVariable("eventId")
+            String eventId
+    ) {
+        DeleteEventRequest request = new DeleteEventRequest();
+        request.setId(eventId);
+        // TODO: 유저 아이디 설정
+        request.setUserId(3L);
+
+        this.eventService.deleteEvent(request);
+
+        return ResponseEntity.ok(new BaseResponse<>(true));
     }
 }
