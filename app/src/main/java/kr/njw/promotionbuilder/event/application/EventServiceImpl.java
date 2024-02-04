@@ -6,6 +6,7 @@ import kr.njw.promotionbuilder.event.application.dto.*;
 import kr.njw.promotionbuilder.event.entity.Event;
 import kr.njw.promotionbuilder.event.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,8 @@ public class EventServiceImpl implements EventService {
     public Optional<FindEventResponse> findEvent(FindEventRequest request) {
         Event event = this.eventRepository.findByIdAndDeletedAtNull(request.getId()).orElse(null);
 
-        if (event == null || !Objects.equals(event.getUserId(), request.getUserId())) {
+        if (event == null ||
+                ObjectUtils.defaultIfNull(request.getUserId(), 0L) != 0L && !Objects.equals(event.getUserId(), request.getUserId())) {
             return Optional.empty();
         }
 

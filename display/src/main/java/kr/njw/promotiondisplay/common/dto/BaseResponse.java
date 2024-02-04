@@ -4,15 +4,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @JsonPropertyOrder({"code", "message", "result"})
 public class BaseResponse<T> {
     // @Schema(example = "200")
-    private final int code;
+    private int code;
     // @Schema(example = "요청에 성공하였습니다.")
-    private final String message;
+    private String message;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T result;
 

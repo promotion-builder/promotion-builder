@@ -1,10 +1,8 @@
-package kr.njw.promotionbuilder.event.entity;
+package kr.njw.promotiondisplay.events.entity;
 
-import kr.njw.promotionbuilder.event.entity.vo.EventBlock;
+import kr.njw.promotiondisplay.events.entity.vo.EventBlock;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -23,8 +21,6 @@ public class Event {
     @Id
     private String id;
 
-    private Long userId;
-
     private String title;
 
     private String description;
@@ -38,16 +34,4 @@ public class Event {
     private LocalDateTime startDateTime;
 
     private LocalDateTime endDateTime;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
-    private LocalDateTime deletedAt;
-
-    public void delete() {
-        this.deletedAt = LocalDateTime.now();
-    }
 }
