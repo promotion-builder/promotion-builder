@@ -6,15 +6,6 @@ spring:
     default: local
   mvc:
     log-resolved-exception: false
-  datasource:
-    url: jdbc:mysql://${APP_DB_HOSTNAME}:${APP_DB_PORT}/${APP_DB_SCHEMA}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${APP_DB_USERNAME}
-    password: ${APP_DB_PASSWORD}
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    open-in-view: false
   data:
     mongodb:
       uri: ${APP_MONGO_DB_URI}
@@ -32,23 +23,10 @@ spring:
 
 server:
   address: 0.0.0.0
-  port: 8080
+  port: 8081
   tomcat:
     max-http-form-post-size: -1
     max-swallow-size: -1
-
-springdoc:
-  default-consumes-media-type: application/json
-  default-produces-media-type: application/json
-  swagger-ui:
-    path: /swagger-ui
-    display-request-duration: true
-    disable-swagger-default-url: false
-    operations-sorter: alpha
-    tags-sorter: alpha
-    persist-authorization: true
-  cache:
-    disabled: true
 
 management:
   endpoints:
@@ -69,3 +47,5 @@ app:
   security:
     jwt-secret: ${APP_JWT_SECRET}
     jwt-token-duration-seconds: ${APP_JWT_TOKEN_DURATION_SECONDS}
+    master-api-key: ${APP_MASTER_API_KEY}
+  main-api-host: ${APP_MAIN_API_HOST}

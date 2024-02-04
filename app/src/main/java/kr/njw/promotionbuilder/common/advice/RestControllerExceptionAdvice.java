@@ -22,6 +22,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -31,8 +32,8 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
-@RestControllerAdvice
-public class ControllerExceptionAdvice {
+@RestControllerAdvice(annotations = RestController.class)
+public class RestControllerExceptionAdvice {
     @Autowired
     private Environment environment;
 
