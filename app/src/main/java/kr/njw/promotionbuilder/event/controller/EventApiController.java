@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -30,7 +31,7 @@ import java.security.Principal;
 public class EventApiController {
     private final EventService eventService;
 
-    // @SecurityRequirement(name = "accessToken")
+    @SecurityRequirement(name = "accessToken")
     @Operation(summary = "이벤트 목록 조회", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
@@ -53,9 +54,7 @@ public class EventApiController {
             Integer pagingSize
     ) {
         FindEventsRequest request = new FindEventsRequest();
-
-        // TODO: 유저 아이디 설정
-        request.setUserId(3L);
+        request.setUserId(Long.valueOf(principal.getName()));
         request.setPage(page);
         request.setPagingSize(pagingSize);
 
@@ -64,7 +63,7 @@ public class EventApiController {
         return ResponseEntity.ok(new BaseResponse<>(response));
     }
 
-    // @SecurityRequirement(name = "accessToken")
+    @SecurityRequirement(name = "accessToken")
     @Operation(summary = "이벤트 상세 조회", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
@@ -81,9 +80,7 @@ public class EventApiController {
             String eventId
     ) {
         FindEventRequest request = new FindEventRequest();
-
-        // TODO: 유저 아이디 설정
-        request.setUserId(3L);
+        request.setUserId(Long.valueOf(principal.getName()));
         request.setId(eventId);
 
         FindEventResponse response = this.eventService.findEvent(request).orElse(null);
@@ -95,7 +92,7 @@ public class EventApiController {
         return ResponseEntity.ok(new BaseResponse<>(response));
     }
 
-    // @SecurityRequirement(name = "accessToken")
+    @SecurityRequirement(name = "accessToken")
     @Operation(summary = "이벤트 생성", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
@@ -105,8 +102,7 @@ public class EventApiController {
     public ResponseEntity<BaseResponse<CreateEventResponse>> createEvent(Principal principal,
                                                                          @Valid @RequestBody CreateEventApiRequest apiRequest) {
         CreateEventRequest request = new CreateEventRequest();
-        // TODO: 유저 아이디 설정
-        request.setUserId(3L);
+        request.setUserId(Long.valueOf(principal.getName()));
         request.setTitle(apiRequest.getTitle());
         request.setDescription(apiRequest.getDescription());
         request.setBannerImage(apiRequest.getBannerImage());
@@ -118,7 +114,7 @@ public class EventApiController {
         return ResponseEntity.ok(new BaseResponse<>(this.eventService.createEvent(request)));
     }
 
-    // @SecurityRequirement(name = "accessToken")
+    @SecurityRequirement(name = "accessToken")
     @Operation(summary = "이벤트 수정", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
@@ -137,8 +133,7 @@ public class EventApiController {
     ) {
         EditEventRequest request = new EditEventRequest();
         request.setId(eventId);
-        // TODO: 유저 아이디 설정
-        request.setUserId(3L);
+        request.setUserId(Long.valueOf(principal.getName()));
         request.setTitle(apiRequest.getTitle());
         request.setDescription(apiRequest.getDescription());
         request.setBannerImage(apiRequest.getBannerImage());
@@ -150,7 +145,7 @@ public class EventApiController {
         return ResponseEntity.ok(new BaseResponse<>(this.eventService.editEvent(request)));
     }
 
-    // @SecurityRequirement(name = "accessToken")
+    @SecurityRequirement(name = "accessToken")
     @Operation(summary = "이벤트 삭제", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
@@ -165,8 +160,7 @@ public class EventApiController {
     ) {
         DeleteEventRequest request = new DeleteEventRequest();
         request.setId(eventId);
-        // TODO: 유저 아이디 설정
-        request.setUserId(3L);
+        request.setUserId(Long.valueOf(principal.getName()));
 
         this.eventService.deleteEvent(request);
 

@@ -69,3 +69,4 @@ app:
   security:
     jwt-secret: ${APP_JWT_SECRET}
     jwt-token-duration-seconds: ${APP_JWT_TOKEN_DURATION_SECONDS}
+    master-api-key: ${APP_MASTER_API_KEY}

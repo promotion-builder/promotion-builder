@@ -2,6 +2,7 @@ package kr.njw.promotionbuilder.common.config;
 
 import kr.njw.promotionbuilder.common.security.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -22,6 +23,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Configuration
 public class SpringSecurityConfig {
+    @Value("${app.security.master-api-key}")
+    private final String MASTER_API_KEY;
+
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -55,6 +59,7 @@ public class SpringSecurityConfig {
         httpSecurity
                 .authorizeHttpRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                .requestMatchers("/api/events/**").hasAnyRole(Role.USER.getValue(), Role.ADMIN.getValue())
                 .anyRequest().permitAll();
 
         httpSecurity
@@ -69,7 +74,8 @@ public class SpringSecurityConfig {
                 .exceptionHandling()
                 .authenticationEntryPoint(this.jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(this.jwtAccessDeniedHandler).and()
-                .addFilterBefore(new JwtAuthenticationFilter(this.jwtAuthenticationProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(this.jwtAuthenticationProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new MasterAuthenticationFilter(this.MASTER_API_KEY), UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
