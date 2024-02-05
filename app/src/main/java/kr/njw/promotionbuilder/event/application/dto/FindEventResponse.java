@@ -7,7 +7,6 @@ import kr.njw.promotionbuilder.event.entity.vo.EventBlock;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -30,7 +29,7 @@ public class FindEventResponse {
     @ArraySchema(
             arraySchema = @Schema(description = "이벤트 페이지 블럭 목록 (이벤트 목록 조회 시에는 null)", nullable = true)
     )
-    private List<EventBlock> blocks = new ArrayList<>();
+    private List<EventBlock> blocks;
 
     @ArraySchema(
             arraySchema = @Schema(description = "이벤트 대상 회원 등급 목록 (등급 제한 없으면 null)", example = "[\"GUEST\", \"MEMBER\"]", nullable = true)

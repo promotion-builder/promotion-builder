@@ -1,0 +1,68 @@
+name: Deploy Display
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - display/**
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-22.04
+    environment: display-production
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/wrapper-validation-action@v2
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::440110353195:role/github-actions-role
+          aws-region: ap-northeast-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ steps.login-ecr.outputs.registry }}/promotion-display
+          tags: |
+            type=raw,value=latest
+
+      - name: Build, tag, and push image to Amazon ECR
+        uses: docker/build-push-action@v5
+        with:
+          context: display
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=build-display-production
+          cache-to: type=gha,mode=max,scope=build-display-production
+
+      - name: Deploy to App Runner
+        id: deploy-apprunner
+        uses: awslabs/amazon-app-runner-deploy@main
+        with:
+          service: promotion-display
+          image: ${{ steps.login-ecr.outputs.registry }}/promotion-display:latest
+          access-role-arn: arn:aws:iam::440110353195:role/service-role/AppRunnerECRAccessRole
+          region: ap-northeast-1
+          cpu: 1
+          memory: 2
+          port: 8081
+          wait-for-service-stability-seconds: 600
+
+      - name: App Runner URL
+        run: echo "App runner URL ${{ steps.deploy-apprunner.outputs.service-url }}"
