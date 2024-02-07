@@ -1,4 +1,4 @@
-package kr.njw.promotiondisplay.events.application.dto;
+package kr.njw.promotiondisplay.event.application.dto;
 
 import lombok.Data;
 

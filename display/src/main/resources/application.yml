@@ -9,6 +9,8 @@ spring:
   data:
     mongodb:
       uri: ${APP_MONGO_DB_URI}
+    redis:
+      url: ${APP_REDIS_URL}
   security:
     user:
       name: ${APP_SECURITY_USERNAME}

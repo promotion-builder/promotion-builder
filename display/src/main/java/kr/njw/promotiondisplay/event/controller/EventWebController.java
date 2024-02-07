@@ -1,8 +1,8 @@
-package kr.njw.promotiondisplay.events.controller;
+package kr.njw.promotiondisplay.event.controller;
 
-import kr.njw.promotiondisplay.events.application.EventDisplayService;
-import kr.njw.promotiondisplay.events.application.dto.FindEventRequest;
-import kr.njw.promotiondisplay.events.application.dto.FindEventResponse;
+import kr.njw.promotiondisplay.event.application.EventDisplayService;
+import kr.njw.promotiondisplay.event.application.dto.FindEventRequest;
+import kr.njw.promotiondisplay.event.application.dto.FindEventResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

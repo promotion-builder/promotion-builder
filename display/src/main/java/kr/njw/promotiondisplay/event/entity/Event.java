@@ -1,6 +1,6 @@
-package kr.njw.promotiondisplay.events.entity;
+package kr.njw.promotiondisplay.event.entity;
 
-import kr.njw.promotiondisplay.events.entity.vo.EventBlock;
+import kr.njw.promotiondisplay.event.entity.vo.EventBlock;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;

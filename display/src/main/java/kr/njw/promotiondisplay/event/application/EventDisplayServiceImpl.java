@@ -1,11 +1,12 @@
-package kr.njw.promotiondisplay.events.application;
+package kr.njw.promotiondisplay.event.application;
 
 import kr.njw.promotiondisplay.common.dto.BaseResponse;
-import kr.njw.promotiondisplay.events.application.dto.FindEventRequest;
-import kr.njw.promotiondisplay.events.application.dto.FindEventResponse;
+import kr.njw.promotiondisplay.event.application.dto.FindEventRequest;
+import kr.njw.promotiondisplay.event.application.dto.FindEventResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +36,7 @@ public class EventDisplayServiceImpl implements EventDisplayService {
     private final RestTemplate restTemplate;
 
     @Override
+    @Cacheable(value = "findEventCache", key = "#request", unless = "#result == null")
     public Optional<FindEventResponse> findEvent(FindEventRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, "Bearer " + this.MASTER_API_KEY);

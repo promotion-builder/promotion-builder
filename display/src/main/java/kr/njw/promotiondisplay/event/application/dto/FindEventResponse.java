@@ -1,7 +1,7 @@
-package kr.njw.promotiondisplay.events.application.dto;
+package kr.njw.promotiondisplay.event.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import kr.njw.promotiondisplay.events.entity.vo.EventBlock;
+import kr.njw.promotiondisplay.event.entity.vo.EventBlock;
 import lombok.Data;
 
 import java.time.LocalDateTime;

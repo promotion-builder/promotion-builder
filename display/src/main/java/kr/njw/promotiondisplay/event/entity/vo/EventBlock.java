@@ -1,4 +1,4 @@
-package kr.njw.promotiondisplay.events.entity.vo;
+package kr.njw.promotiondisplay.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
