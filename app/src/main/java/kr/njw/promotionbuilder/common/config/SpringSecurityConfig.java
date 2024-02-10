@@ -30,11 +30,24 @@ public class SpringSecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
+    public static final String[] whiteListUris = new String[]{
+            "/h2-console/**", "/actuator/health/**",
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/swagger/**",
+            "/api/token/**"
+    };
+
     @Bean
     @Order(1)
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .securityMatcher("/v3/api-docs*/**", "/swagger-ui*/**", "/actuator/**");
+                .securityMatcher(
+                        "/v3/api-docs*/**",
+                        "/swagger-ui*/**",
+                        "/actuator/**");
 
         httpSecurity
                 .authorizeHttpRequests()
@@ -82,7 +95,7 @@ public class SpringSecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/h2-console/**", "/actuator/health/**");
+        return (web) -> web.ignoring().requestMatchers(whiteListUris);
     }
 
     @Bean

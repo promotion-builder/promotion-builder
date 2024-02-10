@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>프로모션 빌더 벗&에디</title>
+</head>
+<body>
+<div>
+    <div>
+        <span>
+            아이디
+        </span>
+        <input id="id"/>
+    </div>
+    <div>
+        <span>
+            비밀번호
+        </span>
+        <input id="password">
+
+    </div>
+    <div>
+        <button>로그인</button>
+    </div>
+</div>
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"
+        integrity="sha512-b94Z6431JyXY14iSXwgzeZurHHRNkLt9d6bAHt7BZT38eqV+GyngIi/tVye4jBKPYQ2lBdRs0glww4fmpuLRwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    const axios = require('axios');
+
+    axios.get("http://localhost:8080", function (_response) {
+        console.log(_response);
+    });
+
+</script>
+</html>
