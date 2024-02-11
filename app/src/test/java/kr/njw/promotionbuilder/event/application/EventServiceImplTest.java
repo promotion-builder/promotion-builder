@@ -1,9 +1,6 @@
 package kr.njw.promotionbuilder.event.application;
 
-import kr.njw.promotionbuilder.event.application.dto.FindEventRequest;
-import kr.njw.promotionbuilder.event.application.dto.FindEventResponse;
-import kr.njw.promotionbuilder.event.application.dto.FindEventsRequest;
-import kr.njw.promotionbuilder.event.application.dto.FindEventsResponse;
+import kr.njw.promotionbuilder.event.application.dto.*;
 import kr.njw.promotionbuilder.event.entity.Event;
 import kr.njw.promotionbuilder.event.entity.vo.EventImageBlock;
 import kr.njw.promotionbuilder.event.entity.vo.EventLinkBlock;
@@ -23,12 +20,15 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.IntStream;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -86,10 +86,32 @@ class EventServiceImplTest {
         assertThat(response.getTotalSize()).isEqualTo(testReturnPage.getTotalElements());
         assertThat(response.getEvents().size()).isEqualTo(testReturnPage.getNumberOfElements());
         assertThat(response.getEvents().size()).isEqualTo(testReturnEvents.size());
+
+        IntStream.range(0, response.getEvents().size()).forEach(idx -> {
+            FindEventResponse findEventResponse = response.getEvents().get(idx);
+            Event testReturnEvent = testReturnEvents.get(idx);
+
+            assertThat(findEventResponse.getId()).isEqualTo(testReturnEvent.getId());
+            assertThat(findEventResponse.getUserId()).isEqualTo(testReturnEvent.getUserId());
+            assertThat(findEventResponse.getTitle()).isEqualTo(testReturnEvent.getTitle());
+            assertThat(findEventResponse.getDescription()).isEqualTo(testReturnEvent.getDescription());
+            assertThat(findEventResponse.getBannerImage()).isEqualTo(testReturnEvent.getBannerImage());
+
+            if (findEventResponse.getGrades() == null) {
+                assertThat(testReturnEvent.getGrades()).isNull();
+            } else {
+                assertThat(findEventResponse.getGrades()).containsExactlyElementsOf(testReturnEvent.getGrades());
+            }
+
+            assertThat(findEventResponse.getStartDateTime()).isEqualTo(testReturnEvent.getStartDateTime());
+            assertThat(findEventResponse.getEndDateTime()).isEqualTo(testReturnEvent.getEndDateTime());
+            assertThat(findEventResponse.getCreatedAt()).isEqualTo(testReturnEvent.getCreatedAt());
+            assertThat(findEventResponse.getUpdatedAt()).isEqualTo(testReturnEvent.getUpdatedAt());
+        });
     }
 
     @Test
-    @DisplayName("이벤트 목록 페이지의 최대 사이즈는 1000개이다")
+    @DisplayName("이벤트 목록 페이지의 최대 사이즈는 1000이다")
     void findEventsLimit() {
         final int PAGE_LIMIT = 1000;
 
@@ -169,9 +191,13 @@ class EventServiceImplTest {
             assertThat(response.getTitle()).isEqualTo(testReturnEvent.getTitle());
             assertThat(response.getDescription()).isEqualTo(testReturnEvent.getDescription());
             assertThat(response.getBannerImage()).isEqualTo(testReturnEvent.getBannerImage());
+            assertThat(response.getBlocks()).containsExactlyElementsOf(testReturnEvent.getBlocks());
 
-            response.getBlocks().forEach(eventBlock -> assertThat(testReturnEvent.getBlocks().contains(eventBlock)).isTrue());
-            response.getGrades().forEach(grade -> assertThat(testReturnEvent.getGrades().contains(grade)).isTrue());
+            if (response.getGrades() == null) {
+                assertThat(testReturnEvent.getGrades()).isNull();
+            } else {
+                assertThat(response.getGrades()).containsExactlyElementsOf(testReturnEvent.getGrades());
+            }
 
             assertThat(response.getStartDateTime()).isEqualTo(testReturnEvent.getStartDateTime());
             assertThat(response.getEndDateTime()).isEqualTo(testReturnEvent.getEndDateTime());
@@ -188,17 +214,37 @@ class EventServiceImplTest {
     @Test
     void editEvent() {
     }
+    */
 
     @Test
+    @DisplayName("이벤트 삭제를 할 수 있어야 한다")
     void deleteEvent() {
+        int testCount = 100;
+
+        for (int i = 0; i < testCount; i++) {
+            Event testReturnEvent = this.createTestEvents(1).get(0);
+
+            given(this.eventRepository.findByIdAndDeletedAtNull(testReturnEvent.getId())).willReturn(Optional.of(testReturnEvent));
+
+            DeleteEventRequest request = new DeleteEventRequest();
+            request.setId(testReturnEvent.getId());
+            request.setUserId(testReturnEvent.getUserId());
+
+            this.eventService.deleteEvent(request);
+
+            then(this.eventRepository)
+                    .should(times(1))
+                    .save(same(testReturnEvent));
+
+            assertThat(testReturnEvent.getDeletedAt()).isCloseTo(this.now, within(1, ChronoUnit.MINUTES));
+        }
     }
-    */
 
     private List<Event> createTestEvents(int count) {
         List<Event> events = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
-            Event event = Event.builder()
+            Event.EventBuilder eventBuilder = Event.builder()
                     .id(this.faker.random().hex(32))
                     .userId(this.faker.random().nextLong())
                     .title(this.faker.book().title())
@@ -224,15 +270,18 @@ class EventServiceImplTest {
                                 return eventScriptBlock;
                             }
                     ).len(0, 10).generate())
-                    .grades(this.faker.collection(() -> this.faker.beer().brand()).nullRate(0.2).len(0, 5).generate())
+                    .grades(this.faker.collection(() -> this.faker.beer().brand()).len(0, 5).generate())
                     .startDateTime(this.now.minusMinutes(this.faker.random().nextLong(1, 100_000)))
                     .endDateTime(this.now.plusMinutes(this.faker.random().nextLong(1, 100_000)))
                     .createdAt(this.now.minusMinutes(this.faker.random().nextLong(1, 100_000)))
                     .updatedAt(this.now.minusMinutes(this.faker.random().nextLong(1, 100_000)))
-                    .deletedAt(null)
-                    .build();
+                    .deletedAt(null);
 
-            events.add(event);
+            if (this.faker.random().nextDouble() <= 0.2) {
+                eventBuilder.grades(null);
+            }
+
+            events.add(eventBuilder.build());
         }
 
         return events;

@@ -35,7 +35,7 @@ class EventTest {
     }
 
     @Test
-    @DisplayName("삭제를 하면 삭제 상태가 되어야 한다")
+    @DisplayName("삭제가 되어야 한다")
     void delete() {
         Event event = Event.builder().build();
 
