@@ -1,5 +1,7 @@
 package kr.njw.promotionbuilder.event.application;
 
+import kr.njw.promotionbuilder.event.application.dto.FindEventRequest;
+import kr.njw.promotionbuilder.event.application.dto.FindEventResponse;
 import kr.njw.promotionbuilder.event.application.dto.FindEventsRequest;
 import kr.njw.promotionbuilder.event.application.dto.FindEventsResponse;
 import kr.njw.promotionbuilder.event.entity.Event;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -120,11 +123,64 @@ class EventServiceImplTest {
         assertThat(response.getEvents().size()).isEqualTo(testReturnEvents.size());
     }
 
-    /*
     @Test
-    void findEvent() {
+    @DisplayName("이벤트 목록 페이지의 blocks 반환값은 null 이다")
+    void findEventsBlocksNull() {
+        long testUserId = 42L;
+        int testPage = 1;
+        int testPagingSize = 100;
+        List<Event> testReturnEvents = this.createTestEvents(testPagingSize);
+        Page<Event> testReturnPage = new PageImpl<>(testReturnEvents, PageRequest.of(0, testReturnEvents.size()), testReturnEvents.size());
+
+        given(this.eventRepository.findByUserIdAndDeletedAtNullOrderByCreatedAtDesc(any(), any())).willReturn(testReturnPage);
+
+        FindEventsRequest request = new FindEventsRequest();
+        request.setUserId(testUserId);
+        request.setPage(testPage);
+        request.setPagingSize(testPagingSize);
+
+        FindEventsResponse response = this.eventService.findEvents(request);
+
+        response.getEvents().forEach(findEventResponse -> assertThat(findEventResponse.getBlocks()).isNull());
     }
 
+    @Test
+    @DisplayName("이벤트 상세를 조회할 수 있어야 한다")
+    void findEvent() {
+        int testCount = 100;
+
+        for (int i = 0; i < testCount; i++) {
+            Event testReturnEvent = this.createTestEvents(1).get(0);
+
+            given(this.eventRepository.findByIdAndDeletedAtNull(testReturnEvent.getId())).willReturn(Optional.of(testReturnEvent));
+
+            FindEventRequest request = new FindEventRequest();
+            request.setId(testReturnEvent.getId());
+            request.setUserId(testReturnEvent.getUserId());
+
+            FindEventResponse response = this.eventService.findEvent(request).orElse(null);
+
+            then(this.eventRepository)
+                    .should(times(1))
+                    .findByIdAndDeletedAtNull(eq(testReturnEvent.getId()));
+
+            assertThat(response.getId()).isEqualTo(testReturnEvent.getId());
+            assertThat(response.getUserId()).isEqualTo(testReturnEvent.getUserId());
+            assertThat(response.getTitle()).isEqualTo(testReturnEvent.getTitle());
+            assertThat(response.getDescription()).isEqualTo(testReturnEvent.getDescription());
+            assertThat(response.getBannerImage()).isEqualTo(testReturnEvent.getBannerImage());
+
+            response.getBlocks().forEach(eventBlock -> assertThat(testReturnEvent.getBlocks().contains(eventBlock)).isTrue());
+            response.getGrades().forEach(grade -> assertThat(testReturnEvent.getGrades().contains(grade)).isTrue());
+
+            assertThat(response.getStartDateTime()).isEqualTo(testReturnEvent.getStartDateTime());
+            assertThat(response.getEndDateTime()).isEqualTo(testReturnEvent.getEndDateTime());
+            assertThat(response.getCreatedAt()).isEqualTo(testReturnEvent.getCreatedAt());
+            assertThat(response.getUpdatedAt()).isEqualTo(testReturnEvent.getUpdatedAt());
+        }
+    }
+
+    /*
     @Test
     void createEvent() {
     }
