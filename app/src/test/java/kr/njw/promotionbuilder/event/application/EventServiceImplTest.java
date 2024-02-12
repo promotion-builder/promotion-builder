@@ -1,5 +1,7 @@
 package kr.njw.promotionbuilder.event.application;
 
+import kr.njw.promotionbuilder.common.dto.BaseResponseStatus;
+import kr.njw.promotionbuilder.common.exception.BaseException;
 import kr.njw.promotionbuilder.event.application.dto.*;
 import kr.njw.promotionbuilder.event.entity.Event;
 import kr.njw.promotionbuilder.event.entity.vo.EventImageBlock;
@@ -18,20 +20,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
@@ -146,7 +145,7 @@ class EventServiceImplTest {
     }
 
     @Test
-    @DisplayName("이벤트 목록 페이지의 blocks 반환값은 null 이다")
+    @DisplayName("이벤트 목록 페이지의 blocks 반환값은 null이다")
     void findEventsBlocksNull() {
         long testUserId = 42L;
         int testPage = 1;
@@ -203,18 +202,226 @@ class EventServiceImplTest {
             assertThat(response.getEndDateTime()).isEqualTo(testReturnEvent.getEndDateTime());
             assertThat(response.getCreatedAt()).isEqualTo(testReturnEvent.getCreatedAt());
             assertThat(response.getUpdatedAt()).isEqualTo(testReturnEvent.getUpdatedAt());
+
+            reset(this.eventRepository);
         }
     }
 
-    /*
+
     @Test
-    void createEvent() {
+    @DisplayName("이벤트 상세 조회시 이벤트가 없으면 empty를 반환한다")
+    void findEventEmpty() {
+        String testEventId = "test";
+        long testUserId = 42L;
+
+        given(this.eventRepository.findByIdAndDeletedAtNull(any())).willReturn(Optional.empty());
+
+        FindEventRequest request = new FindEventRequest();
+        request.setId(testEventId);
+        request.setUserId(testUserId);
+
+        FindEventResponse response = this.eventService.findEvent(request).orElse(null);
+
+        then(this.eventRepository)
+                .should(times(1))
+                .findByIdAndDeletedAtNull(eq(testEventId));
+
+        assertThat(response).isNull();
     }
 
     @Test
-    void editEvent() {
+    @DisplayName("이벤트 상세 조회시 입력된 유저 ID가 다르면 empty를 반환한다")
+    void findEventInvalidUser() {
+        Event testReturnEvent = this.createTestEvents(1).get(0);
+        long testInvalidUserId = testReturnEvent.getUserId() - 1;
+
+        given(this.eventRepository.findByIdAndDeletedAtNull(testReturnEvent.getId())).willReturn(Optional.of(testReturnEvent));
+
+        FindEventRequest request = new FindEventRequest();
+        request.setId(testReturnEvent.getId());
+        request.setUserId(testInvalidUserId);
+
+        FindEventResponse response = this.eventService.findEvent(request).orElse(null);
+
+        then(this.eventRepository)
+                .should(times(1))
+                .findByIdAndDeletedAtNull(eq(testReturnEvent.getId()));
+
+        assertThat(response).isNull();
     }
-    */
+
+
+    @Test
+    @DisplayName("이벤트 상세 조회시 입력된 유저 ID가 null 또는 0이면 이벤트를 반환한다")
+    void findEventNoUserCondition() {
+        Event testReturnEvent = this.createTestEvents(1).get(0);
+        List<Long> testUserIds = Arrays.asList(0L, null);
+
+        for (int i = 0; i < testUserIds.size(); i++) {
+            Long testUserId = testUserIds.get(i);
+
+            given(this.eventRepository.findByIdAndDeletedAtNull(testReturnEvent.getId())).willReturn(Optional.of(testReturnEvent));
+
+            FindEventRequest request = new FindEventRequest();
+            request.setId(testReturnEvent.getId());
+            request.setUserId(testUserId);
+
+            FindEventResponse response = this.eventService.findEvent(request).orElse(null);
+
+            then(this.eventRepository)
+                    .should(times(1))
+                    .findByIdAndDeletedAtNull(eq(testReturnEvent.getId()));
+
+            assertThat(response).isNotNull();
+
+            reset(this.eventRepository);
+        }
+    }
+
+    @Test
+    @DisplayName("이벤트 생성을 할 수 있어야 한다")
+    void createEvent() {
+        int testCount = 100;
+
+        for (int i = 0; i < testCount; i++) {
+            Event testEvent = this.createTestEvents(1).get(0);
+
+            CreateEventRequest request = new CreateEventRequest();
+            request.setUserId(testEvent.getUserId());
+            request.setTitle(testEvent.getTitle());
+            request.setDescription(testEvent.getDescription());
+            request.setBannerImage(testEvent.getBannerImage());
+            request.setBlocks(testEvent.getBlocks());
+            request.setGrades(testEvent.getGrades());
+            request.setStartDateTime(testEvent.getStartDateTime());
+            request.setEndDateTime(testEvent.getEndDateTime());
+
+            willAnswer(invocation -> {
+                Event event = invocation.getArgument(0);
+                ReflectionTestUtils.setField(event, "id", testEvent.getId());
+                return null;
+            }).given(this.eventRepository).save(any());
+
+            CreateEventResponse response = this.eventService.createEvent(request);
+
+            then(this.eventRepository)
+                    .should(times(1))
+                    .save(argThat(event -> event.getUserId().equals(testEvent.getUserId()) &&
+                            event.getTitle().equals(testEvent.getTitle()) &&
+                            event.getDescription().equals(testEvent.getDescription()) &&
+                            event.getBannerImage().equals(testEvent.getBannerImage()) &&
+                            event.getBlocks() == testEvent.getBlocks() &&
+                            event.getGrades() == testEvent.getGrades() &&
+                            event.getStartDateTime().equals(testEvent.getStartDateTime()) &&
+                            event.getEndDateTime().equals(testEvent.getEndDateTime()) &&
+                            event.getDeletedAt() == null
+                    ));
+
+            assertThat(response.getId()).isEqualTo(testEvent.getId());
+
+            reset(this.eventRepository);
+        }
+    }
+
+    @Test
+    @DisplayName("이벤트 수정을 할 수 있어야 한다")
+    void editEvent() {
+        int testCount = 100;
+
+        for (int i = 0; i < testCount; i++) {
+            Event testBaseEvent = this.createTestEvents(1).get(0);
+            Event testOverwriteEvent = this.createTestEvents(1).get(0);
+
+            EditEventRequest request = new EditEventRequest();
+            request.setId(testBaseEvent.getId());
+            request.setUserId(testBaseEvent.getUserId());
+            request.setTitle(testOverwriteEvent.getTitle());
+            request.setDescription(testOverwriteEvent.getDescription());
+            request.setBannerImage(testOverwriteEvent.getBannerImage());
+            request.setBlocks(testOverwriteEvent.getBlocks());
+            request.setGrades(testOverwriteEvent.getGrades());
+            request.setStartDateTime(testOverwriteEvent.getStartDateTime());
+            request.setEndDateTime(testOverwriteEvent.getEndDateTime());
+
+            given(this.eventRepository.findByIdAndDeletedAtNull(testBaseEvent.getId())).willReturn(Optional.of(testBaseEvent));
+
+            EditEventResponse response = this.eventService.editEvent(request);
+
+            then(this.eventRepository)
+                    .should(times(1))
+                    .save(argThat(event -> event.getUserId().equals(testBaseEvent.getUserId()) &&
+                            event.getTitle().equals(testOverwriteEvent.getTitle()) &&
+                            event.getDescription().equals(testOverwriteEvent.getDescription()) &&
+                            event.getBannerImage().equals(testOverwriteEvent.getBannerImage()) &&
+                            event.getBlocks() == testOverwriteEvent.getBlocks() &&
+                            event.getGrades() == testOverwriteEvent.getGrades() &&
+                            event.getStartDateTime().equals(testOverwriteEvent.getStartDateTime()) &&
+                            event.getEndDateTime().equals(testOverwriteEvent.getEndDateTime()) &&
+                            event.getDeletedAt() == null
+                    ));
+
+            assertThat(response.getId()).isEqualTo(testBaseEvent.getId());
+
+            reset(this.eventRepository);
+        }
+    }
+
+    @Test
+    @DisplayName("이벤트 수정시 이벤트가 없으면 NOT_FOUND 오류가 발생한다")
+    void editEventNotFound() {
+        Event testBaseEvent = this.createTestEvents(1).get(0);
+        Event testOverwriteEvent = this.createTestEvents(1).get(0);
+
+        EditEventRequest request = new EditEventRequest();
+        request.setId(testBaseEvent.getId());
+        request.setUserId(testBaseEvent.getUserId());
+        request.setTitle(testOverwriteEvent.getTitle());
+        request.setDescription(testOverwriteEvent.getDescription());
+        request.setBannerImage(testOverwriteEvent.getBannerImage());
+        request.setBlocks(testOverwriteEvent.getBlocks());
+        request.setGrades(testOverwriteEvent.getGrades());
+        request.setStartDateTime(testOverwriteEvent.getStartDateTime());
+        request.setEndDateTime(testOverwriteEvent.getEndDateTime());
+
+        given(this.eventRepository.findByIdAndDeletedAtNull(any())).willReturn(Optional.empty());
+
+        BaseException exception = catchThrowableOfType(() -> this.eventService.editEvent(request), BaseException.class);
+
+        then(this.eventRepository)
+                .should(times(0))
+                .save(any());
+
+        assertThat(exception.getStatus()).isSameAs(BaseResponseStatus.NOT_FOUND);
+    }
+
+
+    @Test
+    @DisplayName("이벤트 수정시 입력된 유저 ID가 다르면 NOT_FOUND 오류가 발생한다")
+    void editEventInvalidUser() {
+        Event testBaseEvent = this.createTestEvents(1).get(0);
+        Event testOverwriteEvent = this.createTestEvents(1).get(0);
+
+        EditEventRequest request = new EditEventRequest();
+        request.setId(testBaseEvent.getId());
+        request.setUserId(testBaseEvent.getUserId() - 1);
+        request.setTitle(testOverwriteEvent.getTitle());
+        request.setDescription(testOverwriteEvent.getDescription());
+        request.setBannerImage(testOverwriteEvent.getBannerImage());
+        request.setBlocks(testOverwriteEvent.getBlocks());
+        request.setGrades(testOverwriteEvent.getGrades());
+        request.setStartDateTime(testOverwriteEvent.getStartDateTime());
+        request.setEndDateTime(testOverwriteEvent.getEndDateTime());
+
+        given(this.eventRepository.findByIdAndDeletedAtNull(testBaseEvent.getId())).willReturn(Optional.of(testBaseEvent));
+
+        BaseException exception = catchThrowableOfType(() -> this.eventService.editEvent(request), BaseException.class);
+
+        then(this.eventRepository)
+                .should(times(0))
+                .save(any());
+
+        assertThat(exception.getStatus()).isSameAs(BaseResponseStatus.NOT_FOUND);
+    }
 
     @Test
     @DisplayName("이벤트 삭제를 할 수 있어야 한다")
@@ -222,7 +429,7 @@ class EventServiceImplTest {
         int testCount = 100;
 
         for (int i = 0; i < testCount; i++) {
-            Event testReturnEvent = this.createTestEvents(1).get(0);
+            Event testReturnEvent = spy(this.createTestEvents(1).get(0));
 
             given(this.eventRepository.findByIdAndDeletedAtNull(testReturnEvent.getId())).willReturn(Optional.of(testReturnEvent));
 
@@ -235,9 +442,28 @@ class EventServiceImplTest {
             then(this.eventRepository)
                     .should(times(1))
                     .save(same(testReturnEvent));
-
-            assertThat(testReturnEvent.getDeletedAt()).isCloseTo(this.now, within(1, ChronoUnit.MINUTES));
+            then(testReturnEvent).should(times(1)).delete();
         }
+    }
+
+    @Test
+    @DisplayName("이벤트 삭제시 입력된 유저 ID가 다르면 삭제되지 않는다")
+    void deleteEventInvalidUser() {
+        Event testReturnEvent = spy(this.createTestEvents(1).get(0));
+        long testInvalidUserId = testReturnEvent.getUserId() + 1;
+
+        given(this.eventRepository.findByIdAndDeletedAtNull(testReturnEvent.getId())).willReturn(Optional.of(testReturnEvent));
+
+        DeleteEventRequest request = new DeleteEventRequest();
+        request.setId(testReturnEvent.getId());
+        request.setUserId(testInvalidUserId);
+
+        this.eventService.deleteEvent(request);
+
+        then(this.eventRepository)
+                .should(times(0))
+                .save(any());
+        then(testReturnEvent).should(times(0)).delete();
     }
 
     private List<Event> createTestEvents(int count) {
@@ -245,7 +471,7 @@ class EventServiceImplTest {
 
         for (int i = 0; i < count; i++) {
             Event.EventBuilder eventBuilder = Event.builder()
-                    .id(this.faker.random().hex(32))
+                    .id(this.faker.random().hex(32).toLowerCase())
                     .userId(this.faker.random().nextLong())
                     .title(this.faker.book().title())
                     .description(this.faker.restaurant().description())
