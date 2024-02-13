@@ -27,6 +27,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .username(userSignUpRequest.getUsername())
                 .password(User.encryptPassword(userSignUpRequest.getPassword()))
+                .secretKey(User.generateRandomHexString())
                 .role(Role.USER)
                 .status(User.UserStatus.ACTIVE)
                 .build();
@@ -34,6 +35,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         return CreateUserResponse.builder()
                 .id(user.getId())
+                .secretKey(user.getSecretKey())
                 .build();
     }
 

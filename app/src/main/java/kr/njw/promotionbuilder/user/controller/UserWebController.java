@@ -21,9 +21,10 @@ public class UserWebController {
     private final UserServiceImpl userService;
 
     @PostMapping(value = "/signUp", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<Object> signUp(@RequestBody UserSignUpRequest userSignUpRequest) {
+    public ResponseEntity<CreateUserResponse> signUp(@RequestBody UserSignUpRequest userSignUpRequest) {
         CreateUserResponse createUserResponse = userService.signUp(userSignUpRequest);
-        return ResponseEntity.created(URI.create("/api/user/"+createUserResponse.getId())).build();
+
+        return ResponseEntity.ok().body(createUserResponse);
     }
 
     @GetMapping(value = "/{username}", produces = "application/json; charset=UTF-8")

@@ -9,4 +9,5 @@ import lombok.*;
 @Builder
 public class CreateUserResponse {
     private Long id;
+    private String secretKey;
 }

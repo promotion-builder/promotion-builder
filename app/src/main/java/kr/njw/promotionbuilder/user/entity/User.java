@@ -3,6 +3,7 @@ package kr.njw.promotionbuilder.user.entity;
 import jakarta.persistence.*;
 import kr.njw.promotionbuilder.common.security.Role;
 import lombok.*;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -30,6 +31,9 @@ public class User {
 
     @Column(length = 1000)
     private String refreshToken;
+
+    @Column(length = 1000)
+    private String secretKey;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "ENUM('ACTIVE', 'DEACTIVATE') default 'ACTIVE'",nullable = false)
@@ -64,5 +68,9 @@ public class User {
     public static String encryptPassword(String password) {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         return bCryptPasswordEncoder.encode(password);
+    }
+
+    public static String generateRandomHexString() {
+        return RandomStringUtils.random(32, "0123456789ABCDEF");
     }
 }
