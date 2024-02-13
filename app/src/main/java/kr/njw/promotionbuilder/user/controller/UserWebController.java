@@ -20,8 +20,17 @@ public class UserWebController {
 
     private final UserServiceImpl userService;
 
-    @PostMapping(value = "/signUp", produces = "application/json; charset=UTF-8")
+    @PostMapping(value = "/", produces = "application/json; charset=UTF-8")
     public ResponseEntity<CreateUserResponse> signUp(@RequestBody UserSignUpRequest userSignUpRequest) {
+
+        CreateUserResponse createUserResponse = userService.signUp(userSignUpRequest);
+
+        return ResponseEntity.ok().body(createUserResponse);
+    }
+
+    @PutMapping(value = "/{userId}", produces = "application/json; charset=UTF-8")
+    public ResponseEntity<CreateUserResponse> signUp(@RequestBody UserSignUpRequest userSignUpRequest) {
+
         CreateUserResponse createUserResponse = userService.signUp(userSignUpRequest);
 
         return ResponseEntity.ok().body(createUserResponse);

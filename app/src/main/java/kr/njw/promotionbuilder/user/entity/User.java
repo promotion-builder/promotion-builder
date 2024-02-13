@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import kr.njw.promotionbuilder.common.security.Role;
 import lombok.*;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,7 +22,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 100, nullable = false, unique = true)
     private String username;
 
     @Column(length = 100, nullable = false)
