@@ -20,6 +20,6 @@ public class EventScriptBlock extends EventBlock {
 
     @Schema(example = "alert('hi');")
     @NotEmpty(message = "must not be empty")
-    @Size(min = 1, max = 300, message = "size must be between 1 and 300")
+    @Size(min = 1, max = 1000, message = "size must be between 1 and 1000")
     private String script;
 }

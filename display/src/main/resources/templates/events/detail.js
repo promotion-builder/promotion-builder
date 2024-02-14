@@ -6,16 +6,19 @@
         "bannerImage": "https://d1y0pslxvt2ep5.cloudfront.net/event/banner/banner_83_20231016032640.png",
         "blocks": [
             {
+                "tag": "image",
                 "image": "https://d1y0pslxvt2ep5.cloudfront.net/event/content/content_83_1_20231016032640.png",
                 "blockType": "IMAGE"
             },
             {
+                "tag": "link",
                 "image": "https://d1y0pslxvt2ep5.cloudfront.net/event/content/content_83_2_20231016032640.png",
                 "blockType": "LINK",
                 "url": "https://carmore.kr/home/",
                 "openType": "BLANK"
             },
             {
+                "tag": "script",
                 "image": "https://d1y0pslxvt2ep5.cloudfront.net/event/content/content_83_5_20231016032640.png",
                 "blockType": "SCRIPT",
                 "script": "alert(\"hello\");"

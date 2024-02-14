@@ -207,7 +207,6 @@ class EventServiceImplTest {
         }
     }
 
-
     @Test
     @DisplayName("이벤트 상세 조회시 이벤트가 없으면 empty를 반환한다")
     void findEventEmpty() {
@@ -250,16 +249,13 @@ class EventServiceImplTest {
         assertThat(response).isNull();
     }
 
-
     @Test
     @DisplayName("이벤트 상세 조회시 입력된 유저 ID가 null 또는 0이면 이벤트를 반환한다")
     void findEventNoUserCondition() {
         Event testReturnEvent = this.createTestEvents(1).get(0);
         List<Long> testUserIds = Arrays.asList(0L, null);
 
-        for (int i = 0; i < testUserIds.size(); i++) {
-            Long testUserId = testUserIds.get(i);
-
+        for (Long testUserId : testUserIds) {
             given(this.eventRepository.findByIdAndDeletedAtNull(testReturnEvent.getId())).willReturn(Optional.of(testReturnEvent));
 
             FindEventRequest request = new FindEventRequest();
@@ -393,7 +389,6 @@ class EventServiceImplTest {
 
         assertThat(exception.getStatus()).isSameAs(BaseResponseStatus.NOT_FOUND);
     }
-
 
     @Test
     @DisplayName("이벤트 수정시 입력된 유저 ID가 다르면 NOT_FOUND 오류가 발생한다")

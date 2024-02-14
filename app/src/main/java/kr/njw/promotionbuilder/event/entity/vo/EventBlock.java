@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -15,11 +16,16 @@ import lombok.Data;
 })
 @Data
 public abstract class EventBlock {
+    @Schema(example = "my_event_block")
+    @Size(min = 1, max = 300, message = "size must be between 1 and 300")
+    protected String tag;
+
     @Schema(example = "https://d1y0pslxvt2ep5.cloudfront.net/event/content/content_83_1_20231016032640.png")
     @NotEmpty(message = "must not be empty")
     @Size(min = 1, max = 300, message = "size must be between 1 and 300")
     protected String image;
 
+    @NotNull(message = "must not be null")
     public BlockType getBlockType() {
         return null;
     }
