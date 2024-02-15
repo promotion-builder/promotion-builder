@@ -1,6 +1,8 @@
 package kr.njw.promotiondisplay.event.application;
 
+import kr.njw.promotiondisplay.common.dto.BaseResponse;
 import kr.njw.promotiondisplay.event.application.dto.FindEventRequest;
+import kr.njw.promotiondisplay.event.application.dto.FindEventResponse;
 import kr.njw.promotiondisplay.event.entity.Event;
 import kr.njw.promotiondisplay.event.entity.vo.EventImageBlock;
 import kr.njw.promotiondisplay.event.entity.vo.EventLinkBlock;
@@ -11,16 +13,29 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @ExtendWith(MockitoExtension.class)
 class EventDisplayServiceImplTest {
@@ -52,12 +67,60 @@ class EventDisplayServiceImplTest {
     @Test
     @DisplayName("이벤트를 조회할 수 있어야 한다")
     void findEvent() {
-        Event testEvent = this.createTestEvents(1).get(0);
+        int testCount = 100;
 
-        FindEventRequest request = new FindEventRequest();
-        request.setId(testEvent.getId());
+        for (int i = 0; i < testCount; i++) {
+            Event testReturnEvent = this.createTestEvents(1).get(0);
 
-        this.eventDisplayServiceImpl.findEvent(request);
+            FindEventRequest request = new FindEventRequest();
+            request.setId(testReturnEvent.getId());
+
+            given(this.restTemplate.exchange(
+                    ArgumentMatchers.<String>any(), any(), any(), ArgumentMatchers.<ParameterizedTypeReference<?>>any()
+            )).willAnswer(invocation -> ResponseEntity.ok(new BaseResponse<>(this.convertEventToResponse(testReturnEvent))));
+
+            FindEventResponse response = this.eventDisplayServiceImpl.findEvent(request).orElse(null);
+
+            then(this.restTemplate)
+                    .should(times(1))
+                    .exchange(
+                            eq(MAIN_API_HOST + "/api/events/" + request.getId()),
+                            eq(HttpMethod.GET),
+                            argThat(httpEntity -> Objects.equals(httpEntity.getHeaders().getFirst(AUTHORIZATION), "Bearer " + MASTER_API_KEY)),
+                            ArgumentMatchers.<ParameterizedTypeReference<?>>any()
+                    );
+
+            assertThat(response.getId()).isEqualTo(testReturnEvent.getId());
+            assertThat(response.getTitle()).isEqualTo(testReturnEvent.getTitle());
+            assertThat(response.getDescription()).isEqualTo(testReturnEvent.getDescription());
+            assertThat(response.getBannerImage()).isEqualTo(testReturnEvent.getBannerImage());
+            assertThat(response.getBlocks()).containsExactlyElementsOf(testReturnEvent.getBlocks());
+
+            if (response.getGrades() == null) {
+                assertThat(testReturnEvent.getGrades()).isNull();
+            } else {
+                assertThat(response.getGrades()).containsExactlyElementsOf(testReturnEvent.getGrades());
+            }
+
+            assertThat(response.getStartDateTime()).isEqualTo(testReturnEvent.getStartDateTime());
+            assertThat(response.getEndDateTime()).isEqualTo(testReturnEvent.getEndDateTime());
+
+            reset(this.restTemplate);
+        }
+    }
+
+    private FindEventResponse convertEventToResponse(Event event) {
+        FindEventResponse findEventResponse = new FindEventResponse();
+        findEventResponse.setId(event.getId());
+        findEventResponse.setTitle(event.getTitle());
+        findEventResponse.setDescription(event.getDescription());
+        findEventResponse.setBannerImage(event.getBannerImage());
+        findEventResponse.setBlocks(event.getBlocks());
+        findEventResponse.setGrades(event.getGrades());
+        findEventResponse.setStartDateTime(event.getStartDateTime());
+        findEventResponse.setEndDateTime(event.getEndDateTime());
+
+        return findEventResponse;
     }
 
     private List<Event> createTestEvents(int count) {

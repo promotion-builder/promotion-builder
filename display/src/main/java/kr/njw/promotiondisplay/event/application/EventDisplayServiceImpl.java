@@ -8,10 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
@@ -55,7 +52,12 @@ public class EventDisplayServiceImpl implements EventDisplayService {
             return Optional.ofNullable(Objects.requireNonNull(responseEntity.getBody()).getResult());
         } catch (HttpClientErrorException e) {
             log.info("findEvent client error", e);
-            return Optional.empty();
+
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                return Optional.empty();
+            }
+
+            throw e;
         } catch (HttpServerErrorException e) {
             log.info("findEvent server error", e);
             throw e;

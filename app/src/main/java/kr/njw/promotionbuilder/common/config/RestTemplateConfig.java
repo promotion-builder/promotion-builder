@@ -6,6 +6,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
@@ -24,6 +27,7 @@ class RestTemplateConfig {
                 .setReadTimeout(Duration.ofSeconds(10))
                 .additionalInterceptors(new LoggingInterceptor())
                 .requestFactory(() -> new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
+                .errorHandler(new RestTemplateErrorHandler())
                 .build();
     }
 
@@ -53,6 +57,23 @@ class RestTemplateConfig {
 
             log.info("[Response {}] status: {} | headers: {} | body: {}",
                     sessionNumber, res.getStatusCode(), res.getHeaders(), body);
+        }
+    }
+
+    @Slf4j
+    public static class RestTemplateErrorHandler implements ResponseErrorHandler {
+        @Override
+        public boolean hasError(ClientHttpResponse response) throws IOException {
+            return response.getStatusCode().is4xxClientError() || response.getStatusCode().is5xxServerError();
+        }
+
+        @Override
+        public void handleError(ClientHttpResponse response) throws IOException {
+            if (response.getStatusCode().is5xxServerError()) {
+                throw new HttpServerErrorException(response.getStatusCode());
+            }
+
+            throw new HttpClientErrorException(response.getStatusCode());
         }
     }
 }
