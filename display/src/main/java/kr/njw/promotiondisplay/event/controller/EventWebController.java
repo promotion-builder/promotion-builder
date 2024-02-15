@@ -20,7 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class EventWebController {
     private final EventDisplayService eventDisplayService;
 
-    @GetMapping(value = "/{eventId}.js", produces = "application/javascript; charset=utf-8")
+    @GetMapping(value = "/{eventId}.js", produces = "application/javascript")
     public ModelAndView event(@PathVariable("eventId") String eventId) {
         FindEventRequest request = new FindEventRequest();
         request.setId(eventId);
