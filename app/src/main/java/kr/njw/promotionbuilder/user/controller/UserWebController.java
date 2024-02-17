@@ -4,6 +4,7 @@ import kr.njw.promotionbuilder.common.exception.BaseException;
 import kr.njw.promotionbuilder.user.controller.dto.CreateUserResponse;
 import kr.njw.promotionbuilder.user.controller.dto.UserDto;
 import kr.njw.promotionbuilder.user.controller.dto.UserSignUpRequest;
+import kr.njw.promotionbuilder.user.controller.dto.UserUpdateRequest;
 import kr.njw.promotionbuilder.user.services.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
@@ -29,11 +30,14 @@ public class UserWebController {
     }
 
     @PutMapping(value = "/{userId}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<CreateUserResponse> signUp(@RequestBody UserSignUpRequest userSignUpRequest) {
+    public ResponseEntity<Object> updateUser(@PathVariable String userId,
+                                                     @RequestBody UserUpdateRequest userUpdateRequest) {
 
-        CreateUserResponse createUserResponse = userService.signUp(userSignUpRequest);
+        if (userId != null) {
+            userService.updateUser(userId, userUpdateRequest);
+        }
 
-        return ResponseEntity.ok().body(createUserResponse);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/{username}", produces = "application/json; charset=UTF-8")

@@ -54,6 +54,10 @@ public class User {
         this.deletedAt = LocalDateTime.now();
     }
 
+    public void setPass(String password) {
+        this.password = encryptPassword(password);
+    }
+
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }

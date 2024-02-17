@@ -8,6 +8,7 @@ import kr.njw.promotionbuilder.common.security.Role;
 import kr.njw.promotionbuilder.user.controller.dto.CreateUserResponse;
 import kr.njw.promotionbuilder.user.controller.dto.UserDto;
 import kr.njw.promotionbuilder.user.controller.dto.UserSignUpRequest;
+import kr.njw.promotionbuilder.user.controller.dto.UserUpdateRequest;
 import kr.njw.promotionbuilder.user.entity.User;
 import kr.njw.promotionbuilder.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,16 @@ public class UserServiceImpl implements UserService {
                 .id(user.getId())
                 .secretKey(user.getSecretKey())
                 .build();
+    }
+
+    @Override
+    @Transactional(rollbackOn = Exception.class)
+    public void updateUser(String userId, UserUpdateRequest userUpdateRequest) {
+
+        User user = userRepository.findUserByUsernameAndDeletedAtNull(userId)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FOUND));
+
+        user.setPass(userUpdateRequest.getPassword());
     }
 
     @Override
