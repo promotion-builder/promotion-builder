@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import kr.njw.promotionbuilder.event.entity.vo.EventBlock;
@@ -17,7 +16,7 @@ import java.util.List;
 @Data
 public abstract class SaveEventApiBaseRequest {
     @Schema(example = "회원가입 이벤트")
-    @NotBlank(message = "must not be blank")
+    @NotNull(message = "must not be null")
     @Size(min = 1, max = 100, message = "size must be between 1 and 100")
     private String title;
 
@@ -41,7 +40,7 @@ public abstract class SaveEventApiBaseRequest {
     )
     @Size(max = 20, message = "size must be between 0 and 20")
     private List<
-            @NotBlank(message = "must not be blank")
+            @NotNull(message = "must not be null")
             @Size(min = 1, max = 100, message = "size must be between 1 and 100") String> grades = new ArrayList<>();
 
     @Schema(type = "string", example = "2024-05-21T14:08:45")

@@ -1,7 +1,6 @@
 package kr.njw.promotionbuilder.event.entity.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -20,8 +19,8 @@ public class EventLinkBlock extends EventBlock {
     private final BlockType blockType = BlockType.LINK;
 
     @Schema(example = "https://github.com")
-    @NotEmpty(message = "must not be empty")
-    @Size(min = 1, max = 300, message = "size must be between 1 and 300")
+    @NotNull(message = "must not be null")
+    @Size(max = 300, message = "size must be between 0 and 300")
     private String url;
 
     @Schema(example = "BLANK")

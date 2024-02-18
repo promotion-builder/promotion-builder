@@ -1,7 +1,7 @@
 package kr.njw.promotionbuilder.event.entity.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,7 +19,7 @@ public class EventScriptBlock extends EventBlock {
     private final BlockType blockType = BlockType.SCRIPT;
 
     @Schema(example = "alert('hi');")
-    @NotEmpty(message = "must not be empty")
-    @Size(min = 1, max = 1000, message = "size must be between 1 and 1000")
+    @NotNull(message = "must not be null")
+    @Size(max = 1000, message = "size must be between 0 and 1000")
     private String script;
 }
