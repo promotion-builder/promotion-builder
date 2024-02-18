@@ -1,34 +1,54 @@
 (function () {
     var event = /*[[${event}]]*/ {
-        "id": "65bf7a57fe10c00a7e8a9021",
-        "title": "카모아 신규회원 이벤트",
-        "description": "신규회원 대상 쿠폰팩 지급 이벤트",
+        "id": "65d1bb82b715055d70a6fc4f",
+        "title": "회원가입 이벤트",
+        "description": "회원가입하면 풍성한 혜택이!",
         "bannerImage": "https://d1y0pslxvt2ep5.cloudfront.net/event/banner/banner_83_20231016032640.png",
         "blocks": [
             {
-                "tag": "image",
+                "id": "48a0c0ffa97d0781f1445ed038091e95",
+                "tag": "my event block",
+                "image": "https://d1y0pslxvt2ep5.cloudfront.net/event/content/content_83_1_20231016032640.png",
+                "blockType": "GIFT",
+                "privacyFields": [
+                    {
+                        "type": "NAME",
+                        "required": true
+                    }
+                ],
+                "terms": [
+                    {
+                        "title": "개인정보 수집 및 이용 동의",
+                        "content": "우리 회사는 개인정보를 수집하여 이용합니다.",
+                        "required": true
+                    }
+                ]
+            },
+            {
+                "id": "7aff4eab8e409eb73e927bf7ca164e3c",
+                "tag": "my event block",
                 "image": "https://d1y0pslxvt2ep5.cloudfront.net/event/content/content_83_1_20231016032640.png",
                 "blockType": "IMAGE"
             },
             {
-                "tag": "link",
-                "image": "https://d1y0pslxvt2ep5.cloudfront.net/event/content/content_83_2_20231016032640.png",
+                "id": "8c631caaeb52f72e62eb19a356c2e819",
+                "tag": "my event block",
+                "image": "https://d1y0pslxvt2ep5.cloudfront.net/event/content/content_83_1_20231016032640.png",
                 "blockType": "LINK",
-                "url": "https://carmore.kr/home/",
+                "url": "https://github.com",
                 "openType": "BLANK"
             },
             {
-                "tag": "script",
-                "image": "https://d1y0pslxvt2ep5.cloudfront.net/event/content/content_83_5_20231016032640.png",
+                "id": "e817eac66595ad9900fcaee49c233809",
+                "tag": "my event block",
+                "image": "https://d1y0pslxvt2ep5.cloudfront.net/event/content/content_83_1_20231016032640.png",
                 "blockType": "SCRIPT",
-                "script": "alert(\"hello\");"
-            },
+                "script": "alert('hi');"
+            }
         ],
-        "grades": [
-            "MEMBER"
-        ],
-        "startDateTime": "2020-05-21T14:08:45",
-        "endDateTime": "2030-07-19T10:21:25",
+        "grades": null,
+        "startDateTime": "2024-05-21T14:08:45",
+        "endDateTime": "2024-07-19T10:21:25"
     };
 
     function addScript(src) {
@@ -66,7 +86,7 @@
                 promotionWrap.id = `promotion_builder_wrap_${event.id}`;
 
                 event.blocks.forEach(((block, index) => {
-                    if (block.blockType === 'IMAGE') {
+                    if (block.blockType === 'IMAGE' || block.blockType === 'GIFT') {
                         promotionWrap.innerHTML += `<img src="${block.image}" alt="Event Block ${index + 1}" style="display: block; width: 100%;">`;
                     } else if (block.blockType === 'LINK') {
                         promotionWrap.innerHTML += `<a href="${block.url}" target="${block.openType === 'BLANK' ? '_blank' : '_self'}" style="display: block; width: 100%;">

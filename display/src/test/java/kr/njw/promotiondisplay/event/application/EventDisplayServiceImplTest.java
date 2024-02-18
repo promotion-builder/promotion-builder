@@ -96,12 +96,6 @@ class EventDisplayServiceImplTest {
             assertThat(response.getBannerImage()).isEqualTo(testReturnEvent.getBannerImage());
             assertThat(response.getBlocks()).containsExactlyElementsOf(testReturnEvent.getBlocks());
 
-            if (response.getGrades() == null) {
-                assertThat(testReturnEvent.getGrades()).isNull();
-            } else {
-                assertThat(response.getGrades()).containsExactlyElementsOf(testReturnEvent.getGrades());
-            }
-
             assertThat(response.getStartDateTime()).isEqualTo(testReturnEvent.getStartDateTime());
             assertThat(response.getEndDateTime()).isEqualTo(testReturnEvent.getEndDateTime());
 
@@ -116,7 +110,6 @@ class EventDisplayServiceImplTest {
         findEventResponse.setDescription(event.getDescription());
         findEventResponse.setBannerImage(event.getBannerImage());
         findEventResponse.setBlocks(event.getBlocks());
-        findEventResponse.setGrades(event.getGrades());
         findEventResponse.setStartDateTime(event.getStartDateTime());
         findEventResponse.setEndDateTime(event.getEndDateTime());
 
@@ -152,13 +145,8 @@ class EventDisplayServiceImplTest {
                                 return eventScriptBlock;
                             }
                     ).len(0, 10).generate())
-                    .grades(this.faker.collection(() -> this.faker.beer().brand()).len(0, 5).generate())
                     .startDateTime(this.now.minusMinutes(this.faker.random().nextLong(1, 100_000)))
                     .endDateTime(this.now.plusMinutes(this.faker.random().nextLong(1, 100_000)));
-
-            if (this.faker.random().nextDouble() <= 0.2) {
-                eventBuilder.grades(null);
-            }
 
             events.add(eventBuilder.build());
         }

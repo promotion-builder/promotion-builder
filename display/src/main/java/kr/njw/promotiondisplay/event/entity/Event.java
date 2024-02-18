@@ -28,8 +28,6 @@ public class Event {
 
     private List<EventBlock> blocks;
 
-    private List<String> grades;
-
     private LocalDateTime startDateTime;
 
     private LocalDateTime endDateTime;

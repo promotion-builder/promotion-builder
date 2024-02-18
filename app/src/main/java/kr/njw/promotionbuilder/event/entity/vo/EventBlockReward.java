@@ -2,6 +2,7 @@ package kr.njw.promotionbuilder.event.entity.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,6 +22,7 @@ public class EventBlockReward {
     @Schema(description = "당첨 확률 (0.001% 단위)", example = "50000")
     @NotNull(message = "must not be null")
     @Min(value = 0, message = "must be greater than or equal to 0")
+    @Max(value = 100000, message = "must be less than or equal to 100000")
     private long percentage;
 
     @Schema(description = "총 당첨 허용 횟수 (null: 무제한)", example = "10")

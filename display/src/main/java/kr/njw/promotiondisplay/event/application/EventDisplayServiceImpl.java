@@ -33,7 +33,7 @@ public class EventDisplayServiceImpl implements EventDisplayService {
     private final RestTemplate restTemplate;
 
     @Override
-    @Cacheable(value = "findEventCache", key = "#request", unless = "#result == null")
+    @Cacheable(value = "findEventCache.v1", key = "#request", unless = "#result == null")
     public Optional<FindEventResponse> findEvent(FindEventRequest request) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, "Bearer " + this.MASTER_API_KEY);
