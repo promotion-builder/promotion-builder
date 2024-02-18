@@ -36,7 +36,7 @@ public abstract class SaveEventApiBaseRequest {
     private List<@NotNull(message = "must not be null") EventBlock> blocks = new ArrayList<>();
 
     @ArraySchema(
-            arraySchema = @Schema(description = "등급 제한 없으면 null", example = "[\"GUEST\", \"MEMBER\"]", nullable = true)
+            arraySchema = @Schema(description = "등급 제한 없으면 null", example = "null", nullable = true)
     )
     @Size(max = 20, message = "size must be between 0 and 20")
     private List<

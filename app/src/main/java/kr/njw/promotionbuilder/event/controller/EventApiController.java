@@ -36,7 +36,7 @@ public class EventApiController {
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", content = @Content()),
-            @ApiResponse(responseCode = "403", content = @Content()),
+            @ApiResponse(responseCode = "401", content = @Content()),
     })
     @GetMapping("")
     public ResponseEntity<BaseResponse<FindEventsResponse>> findEvents(
@@ -68,8 +68,8 @@ public class EventApiController {
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", content = @Content()),
-            @ApiResponse(responseCode = "403", content = @Content()),
-            @ApiResponse(responseCode = "404", content = @Content())
+            @ApiResponse(responseCode = "401", content = @Content()),
+            @ApiResponse(responseCode = "404", content = @Content()),
     })
     @GetMapping("/{eventId}")
     public ResponseEntity<BaseResponse<FindEventResponse>> findEvent(
@@ -96,7 +96,8 @@ public class EventApiController {
     @Operation(summary = "이벤트 생성", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "403", content = @Content())
+            @ApiResponse(responseCode = "400", content = @Content()),
+            @ApiResponse(responseCode = "401", content = @Content()),
     })
     @PostMapping("")
     public ResponseEntity<BaseResponse<CreateEventResponse>> createEvent(Principal principal,
@@ -118,8 +119,9 @@ public class EventApiController {
     @Operation(summary = "이벤트 수정", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "403", content = @Content()),
-            @ApiResponse(responseCode = "404", content = @Content())
+            @ApiResponse(responseCode = "400", content = @Content()),
+            @ApiResponse(responseCode = "401", content = @Content()),
+            @ApiResponse(responseCode = "404", content = @Content()),
     })
     @PutMapping("/{eventId}")
     public ResponseEntity<BaseResponse<EditEventResponse>> editEvent(
@@ -149,6 +151,8 @@ public class EventApiController {
     @Operation(summary = "이벤트 삭제", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content()),
+            @ApiResponse(responseCode = "401", content = @Content()),
     })
     @DeleteMapping("/{eventId}")
     public ResponseEntity<BaseResponse<Boolean>> deleteEvent(

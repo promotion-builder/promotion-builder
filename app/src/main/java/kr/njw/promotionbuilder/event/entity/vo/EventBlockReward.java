@@ -1,6 +1,5 @@
 package kr.njw.promotionbuilder.event.entity.vo;
 
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -9,9 +8,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Document(collection = "event_block_reward")
 @TypeAlias("EventBlockReward")
@@ -48,31 +44,21 @@ public class EventBlockReward {
         @NotNull(message = "must not be null")
         private IssuerType type;
 
-        @ArraySchema(
-                arraySchema = @Schema(description = "미리 정의된 쿠폰번호 목록", example = "[\"AAAA-BBBB\", \"AAAA-CCCC\"]", nullable = true)
-        )
-        @Size(min = 1, max = 1000, message = "size must be between 1 and 1000")
-        private List<
-                @NotNull(message = "must not be null")
-                @Size(min = 1, max = 100, message = "size must be between 1 and 100") String> instantStaticRewards = new ArrayList<>();
-
         @Schema(description = "업체가 구현한 리워드 지급 API URL", example = "http://localhost:8080/coupons")
         @Size(min = 1, max = 300, message = "size must be between 1 and 300")
-        private String instantApiUrl;
+        private String instantRewardApiUrl;
 
         @Schema(description = "리워드 지급 API - 리워드 ID", example = "100_DISCOUNT")
         @Size(min = 1, max = 300, message = "size must be between 1 and 300")
-        private String instantApiKey;
+        private String instantRewardApiKey;
 
         @Schema(description = "리워드 지급 API - 리워드 수량", example = "1")
-        private Long instantApiAmount;
+        private Long instantRewardApiAmount;
 
-        @Schema(description = "INSTANT_STATIC: 즉시지급 (미리 정의된 쿠폰번호 목록 사용), " +
-                "INSTANT_API: 즉시지급 (업체가 구현한 리워드 지급 API 호출), " +
+        @Schema(description = "INSTANT_API: 즉시지급 (업체가 구현한 리워드 지급 API 호출), " +
                 "PUT: 나중에 지급 (프로모션빌더 당첨 현황에만 저장), " +
                 "NONE: 꽝")
         public enum IssuerType {
-            INSTANT_STATIC,
             INSTANT_API,
             PUT,
             NONE

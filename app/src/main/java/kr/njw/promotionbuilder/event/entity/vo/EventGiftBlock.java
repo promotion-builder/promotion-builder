@@ -22,18 +22,13 @@ public class EventGiftBlock extends EventBlock {
     @Transient
     private final BlockType blockType = BlockType.GIFT;
 
-//    @Schema(example = "100% 당첨 이벤트")
-//    @NotNull(message = "must not be null")
-//    @Size(min = 1, max = 300, message = "size must be between 1 and 300")
-//    private String name;
-
     @Valid
     @NotNull(message = "must not be null")
     private EventBlockUserCondition userCondition;
 
     @Valid
     @NotNull(message = "must not be null")
-    @Size(min = 1, max = 10, message = "size must be between 1 and 10")
+    @Size(min = 1, max = 100, message = "size must be between 1 and 100")
     private List<@NotNull(message = "must not be null") EventBlockReward> rewards = new ArrayList<>();
 
     @Valid

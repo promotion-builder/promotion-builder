@@ -32,7 +32,7 @@ public class FindEventResponse {
     private List<EventBlock> blocks;
 
     @ArraySchema(
-            arraySchema = @Schema(description = "이벤트 대상 회원 등급 목록 (등급 제한 없으면 null)", example = "[\"GUEST\", \"MEMBER\"]", nullable = true)
+            arraySchema = @Schema(description = "이벤트 대상 회원 등급 목록 (등급 제한 없으면 null)", example = "null", nullable = true)
     )
     private List<String> grades;
 

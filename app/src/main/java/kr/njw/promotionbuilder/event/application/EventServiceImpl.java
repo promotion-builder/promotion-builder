@@ -4,6 +4,7 @@ import kr.njw.promotionbuilder.common.dto.BaseResponseStatus;
 import kr.njw.promotionbuilder.common.exception.BaseException;
 import kr.njw.promotionbuilder.event.application.dto.*;
 import kr.njw.promotionbuilder.event.entity.Event;
+import kr.njw.promotionbuilder.event.entity.vo.EventBlock;
 import kr.njw.promotionbuilder.event.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
@@ -84,6 +85,8 @@ public class EventServiceImpl implements EventService {
     public CreateEventResponse createEvent(CreateEventRequest request) {
         // TODO: 유저 상태 검증
 
+        request.getBlocks().forEach(EventBlock::issueId);
+
         Event event = Event.builder()
                 .userId(request.getUserId())
                 .title(request.getTitle())
@@ -112,6 +115,8 @@ public class EventServiceImpl implements EventService {
         if (oldEvent == null || !Objects.equals(oldEvent.getUserId(), request.getUserId())) {
             throw new BaseException(BaseResponseStatus.NOT_FOUND);
         }
+
+        request.getBlocks().forEach(EventBlock::issueId);
 
         Event newEvent = Event.builder()
                 .id(oldEvent.getId())

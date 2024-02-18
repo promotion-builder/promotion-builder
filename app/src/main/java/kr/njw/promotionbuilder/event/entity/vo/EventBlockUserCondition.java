@@ -24,7 +24,7 @@ public class EventBlockUserCondition {
     private UserKey userKey;
 
     @Valid
-    private UserConditionCheckApi userConditionCheckApi;
+    private UserConditionCheckApi additionalApi;
 
     @Schema(description = "유저별 총 응모 허용 횟수 (null: 무제한)", example = "10")
     @Min(value = 0, message = "must be greater than or equal to 0")
