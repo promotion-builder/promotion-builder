@@ -78,6 +78,6 @@ public class User {
     }
 
     public static String generateRandomHexString() {
-        return RandomStringUtils.random(32, "0123456789ABCDEF");
+        return RandomStringUtils.random(32, "0123456789abcdefghijklmnopqrstuvwxyz");
     }
 }
