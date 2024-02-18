@@ -29,6 +29,7 @@ public class UserServiceImpl implements UserService {
                 .username(userSignUpRequest.getUsername())
                 .password(User.encryptPassword(userSignUpRequest.getPassword()))
                 .secretKey(User.generateRandomHexString())
+                .companyName(userSignUpRequest.getCompanyName())
                 .role(Role.USER)
                 .status(User.UserStatus.ACTIVE)
                 .build();
@@ -47,7 +48,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findUserByUsernameAndDeletedAtNull(userId)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FOUND));
 
-        user.setPass(userUpdateRequest.getPassword());
+        user.updateUser(userUpdateRequest.getPassword(), userUpdateRequest.getCompanyName());
     }
 
     @Override

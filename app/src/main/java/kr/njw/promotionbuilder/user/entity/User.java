@@ -31,6 +31,9 @@ public class User {
     @Column(length = 1000)
     private String refreshToken;
 
+    @Column(length = 200)
+    private String companyName;
+
     @Column(length = 1000)
     private String secretKey;
 
@@ -54,8 +57,9 @@ public class User {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void setPass(String password) {
-        this.password = encryptPassword(password);
+    public void updateUser(String password, String companyName) {
+        this.password = password;
+        this.companyName = companyName;
     }
 
     public void setRefreshToken(String refreshToken) {

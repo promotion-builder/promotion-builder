@@ -1,18 +1,14 @@
 package kr.njw.promotionbuilder.user.controller;
 
-import kr.njw.promotionbuilder.common.exception.BaseException;
 import kr.njw.promotionbuilder.user.controller.dto.CreateUserResponse;
 import kr.njw.promotionbuilder.user.controller.dto.UserDto;
 import kr.njw.promotionbuilder.user.controller.dto.UserSignUpRequest;
 import kr.njw.promotionbuilder.user.controller.dto.UserUpdateRequest;
 import kr.njw.promotionbuilder.user.services.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
 
 @Controller
 @RequiredArgsConstructor
