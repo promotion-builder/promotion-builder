@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class FindTokenApiRequest {
+public class LoginApiRequest {
     @Schema(description = "username", example = "eddy")
     @NotBlank(message = "username이 비었습니다.")
     private String username;

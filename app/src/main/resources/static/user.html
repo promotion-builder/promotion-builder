@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>이용자 목록</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+</head>
+<body>
+
+<div>등록된 이용자</div>
+<a href="main.html"/> 메인 페이지
+</body>
+<script>
+
+    (function () {
+        axios.get(`http://localhost:8080/api/user/${localStorage.getItem("username")}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json', // JSON 형식으로 요청하는 경우
+                    'Authorization': localStorage.getItem("authorization") // 인증 토큰을 포함한 경우
+                }
+            }
+        ).
+        then(response => {
+            console.log(response);
+        })
+    })();
+</script>
+</html>

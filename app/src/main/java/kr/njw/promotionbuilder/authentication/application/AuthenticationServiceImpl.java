@@ -29,7 +29,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final static BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public TokenResponse login(Login login) {
+    public String login(Login login) {
         User user =
                 userRepository.findUserByUsernameAndDeletedAtNull(login.getMemberId())
                         .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FOUND_USER));
@@ -37,7 +37,29 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (!passwordEncoder.matches(login.getPassword(), user.getPassword()))
             throw new BaseException(BaseResponseStatus.LOGIN_ERROR);
 
-        if (user.getDeletedAt().isBefore(LocalDateTime.now()))
+        if (user.getDeletedAt() != null && user.getDeletedAt().isBefore(LocalDateTime.now()))
+            throw new BaseException(BaseResponseStatus.UNAUTHORIZED);
+
+        List<Role> roles = new ArrayList<>();
+        roles.add(user.getRole());
+
+        String refreshToken = jwtAuthenticationProvider.createRefreshToken(user.getUsername(), roles);
+
+        user.setRefreshToken(refreshToken);
+        userRepository.saveAndFlush(user);
+
+        return jwtAuthenticationProvider.createToken(user.getUsername(), roles);
+    }
+
+    public TokenResponse issue(Login login) {
+        User user =
+                userRepository.findUserByUsernameAndDeletedAtNull(login.getMemberId())
+                        .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FOUND_USER));
+
+        if (!passwordEncoder.matches(login.getPassword(), user.getPassword()))
+            throw new BaseException(BaseResponseStatus.LOGIN_ERROR);
+
+        if (user.getDeletedAt() != null && user.getDeletedAt().isBefore(LocalDateTime.now()))
             throw new BaseException(BaseResponseStatus.UNAUTHORIZED);
 
         List<Role> roles = new ArrayList<>();

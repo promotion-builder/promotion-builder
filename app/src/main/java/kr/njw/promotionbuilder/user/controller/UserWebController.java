@@ -1,5 +1,10 @@
 package kr.njw.promotionbuilder.user.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import kr.njw.promotionbuilder.authentication.application.AuthenticationService;
+import kr.njw.promotionbuilder.authentication.controller.dto.LoginApiRequest;
+import kr.njw.promotionbuilder.common.dto.Login;
 import kr.njw.promotionbuilder.user.controller.dto.CreateUserResponse;
 import kr.njw.promotionbuilder.user.controller.dto.UserDto;
 import kr.njw.promotionbuilder.user.controller.dto.UserSignUpRequest;
@@ -16,6 +21,21 @@ import org.springframework.web.bind.annotation.*;
 public class UserWebController {
 
     private final UserServiceImpl userService;
+
+    private final AuthenticationService authenticationService;
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(
+            @Valid @RequestBody LoginApiRequest loginApiRequest, HttpServletResponse response) {
+        String token = authenticationService.login(Login.init(
+                loginApiRequest.getUsername(),
+                loginApiRequest.getPassword()
+        ));
+
+        response.setHeader("Authorization", "Bearer " +token);
+
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping(value = "/", produces = "application/json; charset=UTF-8")
     public ResponseEntity<CreateUserResponse> signUp(@RequestBody UserSignUpRequest userSignUpRequest) {
