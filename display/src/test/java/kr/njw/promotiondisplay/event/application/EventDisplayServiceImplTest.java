@@ -4,6 +4,7 @@ import kr.njw.promotiondisplay.common.dto.BaseResponse;
 import kr.njw.promotiondisplay.event.application.dto.FindEventRequest;
 import kr.njw.promotiondisplay.event.application.dto.FindEventResponse;
 import kr.njw.promotiondisplay.event.entity.Event;
+import kr.njw.promotiondisplay.event.entity.vo.EventGiftBlock;
 import kr.njw.promotiondisplay.event.entity.vo.EventImageBlock;
 import kr.njw.promotiondisplay.event.entity.vo.EventLinkBlock;
 import kr.njw.promotiondisplay.event.entity.vo.EventScriptBlock;
@@ -143,6 +144,11 @@ class EventDisplayServiceImplTest {
                                 eventScriptBlock.setImage(this.faker.internet().url());
                                 eventScriptBlock.setScript(this.faker.lorem().paragraph());
                                 return eventScriptBlock;
+                            },
+                            () -> {
+                                EventGiftBlock eventGiftBlock = new EventGiftBlock();
+                                eventGiftBlock.setImage(this.faker.internet().url());
+                                return eventGiftBlock;
                             }
                     ).len(0, 10).generate())
                     .startDateTime(this.now.minusMinutes(this.faker.random().nextLong(1, 100_000)))

@@ -4,6 +4,7 @@ import kr.njw.promotionbuilder.common.dto.BaseResponseStatus;
 import kr.njw.promotionbuilder.common.exception.BaseException;
 import kr.njw.promotionbuilder.event.application.dto.*;
 import kr.njw.promotionbuilder.event.entity.Event;
+import kr.njw.promotionbuilder.event.entity.vo.EventGiftBlock;
 import kr.njw.promotionbuilder.event.entity.vo.EventImageBlock;
 import kr.njw.promotionbuilder.event.entity.vo.EventLinkBlock;
 import kr.njw.promotionbuilder.event.entity.vo.EventScriptBlock;
@@ -489,6 +490,11 @@ class EventServiceImplTest {
                                 eventScriptBlock.setImage(this.faker.internet().url());
                                 eventScriptBlock.setScript(this.faker.lorem().paragraph());
                                 return eventScriptBlock;
+                            },
+                            () -> {
+                                EventGiftBlock eventGiftBlock = new EventGiftBlock();
+                                eventGiftBlock.setImage(this.faker.internet().url());
+                                return eventGiftBlock;
                             }
                     ).len(0, 10).generate())
                     .grades(this.faker.collection(() -> this.faker.beer().brand()).len(0, 5).generate())
