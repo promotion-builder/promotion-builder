@@ -35,9 +35,7 @@ public abstract class EventBlock {
     }
 
     @NotNull(message = "must not be null")
-    public BlockType getBlockType() {
-        return null;
-    }
+    public abstract BlockType getBlockType();
 
     public enum BlockType {
         IMAGE,
