@@ -1,0 +1,66 @@
+spring:
+  profiles:
+    group:
+      local: local
+      prod: prod
+    default: local
+  mvc:
+    log-resolved-exception: false
+  data:
+    mongodb:
+      uri: ${APP_MONGO_DB_URI}
+    redis:
+      url: ${APP_REDIS_URL}
+  security:
+    user:
+      name: ${APP_SECURITY_USERNAME}
+      password: ${APP_SECURITY_PASSWORD}
+      roles: ADMIN
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
+  thymeleaf:
+    cache: false
+
+server:
+  address: 0.0.0.0
+  port: 8082
+  tomcat:
+    max-http-form-post-size: -1
+    max-swallow-size: -1
+
+springdoc:
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  swagger-ui:
+    path: /swagger-ui
+    display-request-duration: true
+    disable-swagger-default-url: false
+    operations-sorter: alpha
+    tags-sorter: alpha
+    persist-authorization: true
+  cache:
+    disabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - beans
+          - env
+          - health
+          - mappings
+          - metrics
+          - prometheus
+  endpoint:
+    health:
+      show-details: always
+
+app:
+  security:
+    jwt-secret: ${APP_JWT_SECRET}
+    jwt-token-duration-seconds: ${APP_JWT_TOKEN_DURATION_SECONDS}
+    master-api-key: ${APP_MASTER_API_KEY}
+  main-api-host: ${APP_MAIN_API_HOST}

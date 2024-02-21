@@ -1,0 +1,14 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  devtools:
+    livereload:
+      enabled: false
+    restart:
+      enabled: false
+
+server:
+  error:
+    whitelabel:
+      enabled: false
