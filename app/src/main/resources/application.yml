@@ -75,8 +75,8 @@ management:
 app:
   security:
     jwt-secret: ${APP_JWT_SECRET}
-    jwt-token-duration-seconds: ${APP_JWT_TOKEN_DURATION_SECONDS}
     master-api-key: ${APP_MASTER_API_KEY}
+    jwt-access-token-duration-seconds: ${APP_JWT_ACCESS_TOKEN_DURATION_SECONDS}
     jwt-refresh-token-duration-seconds: ${APP_JWT_REFRESH_TOKEN_DURATION_SECONDS}
   sns:
     event-topic-name: ${APP_SNS_EVENT_TOPIC_NAME}
