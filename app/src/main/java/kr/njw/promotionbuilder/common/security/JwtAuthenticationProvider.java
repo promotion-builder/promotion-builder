@@ -80,7 +80,7 @@ public class JwtAuthenticationProvider {
 
         Claims claims = this.getClaims(token);
 
-        if (StringUtils.isBlank(claims.getSubject())) {
+        if (claims == null || StringUtils.isBlank(claims.getSubject())) {
             return Optional.empty();
         }
 
@@ -105,6 +105,11 @@ public class JwtAuthenticationProvider {
 
         try {
             Claims claims = this.getClaims(token);
+
+            if (claims == null) {
+                return false;
+            }
+
             return claims.getExpiration().after(Date.from(now));
         } catch (Exception e) {
             return false;
