@@ -1,15 +1,11 @@
-package kr.njw.promotionbuilder.authentication.application.dto;
+package kr.njw.promotionbuilder.auth.application.dto;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.Data;
 
-@Getter
-@Builder()
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Data
 public class TokenResponse {
-
     @Schema(description = "access token")
     private String accessToken;
 
