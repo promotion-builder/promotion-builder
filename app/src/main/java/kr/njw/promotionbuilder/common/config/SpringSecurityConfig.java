@@ -24,10 +24,11 @@ import java.util.List;
 @Configuration
 public class SpringSecurityConfig {
     public static final String[] PUBLIC_URIS = new String[]{
-            "/api/tokens/**",
-            "/api/user/login",
-            "/api/user/signup",
-            "/user/**"
+            "/api/auth/**",
+            "/api/users",
+            "/api/sample/**",
+            "/user/**",
+            "/sample/**"
     };
 
     @Value("${app.security.master-api-key}")
