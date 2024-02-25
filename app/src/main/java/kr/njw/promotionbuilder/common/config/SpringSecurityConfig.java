@@ -23,6 +23,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Configuration
 public class SpringSecurityConfig {
+    public static final String[] PUBLIC_URIS = new String[]{
+            "/api/tokens/**",
+            "/api/user/login",
+            "/api/user/signup",
+            "/user/**"
+    };
+
     @Value("${app.security.master-api-key}")
     private final String MASTER_API_KEY;
 
@@ -30,21 +37,11 @@ public class SpringSecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    public static final String[] userWhiteListUris = new String[]{
-            "/api/token/**",
-            "/api/user/login",
-            "/api/user/signup",
-            "/user/**"
-    };
-
     @Bean
     @Order(1)
     public SecurityFilterChain adminSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .securityMatcher(
-                        "/v3/api-docs*/**",
-                        "/swagger-ui*/**",
-                        "/actuator/**");
+                .securityMatcher("/v3/api-docs*/**", "/swagger-ui*/**", "/actuator/**");
 
         httpSecurity
                 .authorizeHttpRequests()
@@ -69,9 +66,8 @@ public class SpringSecurityConfig {
         httpSecurity
                 .authorizeHttpRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                .requestMatchers("/api/events/**").hasAnyRole(Role.USER.getValue(), Role.ADMIN.getValue())
-                .requestMatchers(userWhiteListUris).permitAll()
-                .anyRequest().authenticated();
+                .requestMatchers(PUBLIC_URIS).permitAll()
+                .anyRequest().hasAnyRole(Role.USER.getValue(), Role.ADMIN.getValue());
 
         httpSecurity
                 .httpBasic().disable()
@@ -93,7 +89,7 @@ public class SpringSecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers(userWhiteListUris);
+        return (web) -> web.ignoring().requestMatchers("/h2-console/**", "/actuator/health/**");
     }
 
     @Bean
