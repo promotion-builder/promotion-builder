@@ -22,6 +22,17 @@ spring:
       max-request-size: 20MB
   thymeleaf:
     cache: false
+  cloud:
+    aws:
+      credentials:
+        access-key: ${APP_AWS_ACCESS_KEY}
+        secret-key: ${APP_AWS_SECRET_KEY}
+      sqs:
+        region: ${APP_SQS_REGION}
+        listener:
+          max-concurrent-messages: 100
+          max-messages-per-poll: 10
+          poll-timeout: 10s
 
 server:
   address: 0.0.0.0
@@ -64,3 +75,5 @@ app:
     jwt-token-duration-seconds: ${APP_JWT_TOKEN_DURATION_SECONDS}
     master-api-key: ${APP_MASTER_API_KEY}
   main-api-host: ${APP_MAIN_API_HOST}
+  sqs:
+    event-queue-name: ${APP_SQS_EVENT_QUEUE_NAME}
