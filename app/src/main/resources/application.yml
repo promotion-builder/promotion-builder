@@ -29,6 +29,13 @@ spring:
       max-request-size: 20MB
   thymeleaf:
     cache: false
+  cloud:
+    aws:
+      credentials:
+        access-key: ${APP_AWS_ACCESS_KEY}
+        secret-key: ${APP_AWS_SECRET_KEY}
+      sns:
+        region: ${APP_SNS_REGION}
 
 server:
   address: 0.0.0.0
@@ -71,3 +78,5 @@ app:
     jwt-token-duration-seconds: ${APP_JWT_TOKEN_DURATION_SECONDS}
     master-api-key: ${APP_MASTER_API_KEY}
     jwt-refresh-token-duration-seconds: ${APP_JWT_REFRESH_TOKEN_DURATION_SECONDS}
+  sns:
+    event-topic-name: ${APP_SNS_EVENT_TOPIC_NAME}

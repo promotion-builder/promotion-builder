@@ -1,13 +1,16 @@
 package kr.njw.promotionbuilder.event.application;
 
+import io.awspring.cloud.sns.core.SnsTemplate;
 import kr.njw.promotionbuilder.common.dto.BaseResponseStatus;
 import kr.njw.promotionbuilder.common.exception.BaseException;
 import kr.njw.promotionbuilder.event.application.dto.*;
+import kr.njw.promotionbuilder.event.application.vo.EventChangeNotification;
 import kr.njw.promotionbuilder.event.entity.Event;
 import kr.njw.promotionbuilder.event.entity.vo.EventBlock;
 import kr.njw.promotionbuilder.event.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -17,12 +20,16 @@ import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-@Transactional
 @Service
 public class EventServiceImpl implements EventService {
+    @Value("${app.sns.event-topic-name}")
+    private final String SNS_EVENT_TOPIC_NAME;
+
     private final EventRepository eventRepository;
+    private final SnsTemplate snsTemplate;
 
     @Override
+    @Transactional(readOnly = true)
     public FindEventsResponse findEvents(FindEventsRequest request) {
         final int MAX_PAGING_SIZE = 1000;
 
@@ -57,6 +64,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<FindEventResponse> findEvent(FindEventRequest request) {
         Event event = this.eventRepository.findByIdAndDeletedAtNull(request.getId()).orElse(null);
 
@@ -82,6 +90,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public CreateEventResponse createEvent(CreateEventRequest request) {
         // TODO: 유저 상태 검증
 
@@ -103,10 +112,12 @@ public class EventServiceImpl implements EventService {
         CreateEventResponse response = new CreateEventResponse();
         response.setId(event.getId());
 
+        this.sendEventChangeNotification(event.getId());
         return response;
     }
 
     @Override
+    @Transactional
     public EditEventResponse editEvent(EditEventRequest request) {
         // TODO: 유저 상태 검증
 
@@ -135,10 +146,12 @@ public class EventServiceImpl implements EventService {
         EditEventResponse response = new EditEventResponse();
         response.setId(newEvent.getId());
 
+        this.sendEventChangeNotification(newEvent.getId());
         return response;
     }
 
     @Override
+    @Transactional
     public void deleteEvent(DeleteEventRequest request) {
         // TODO: 유저 상태 검증
 
@@ -150,5 +163,13 @@ public class EventServiceImpl implements EventService {
 
         event.delete();
         this.eventRepository.save(event);
+        this.sendEventChangeNotification(event.getId());
+    }
+
+    private void sendEventChangeNotification(String eventId) {
+        EventChangeNotification notification = new EventChangeNotification();
+        notification.setEventId(eventId);
+
+        this.snsTemplate.sendNotification(SNS_EVENT_TOPIC_NAME, notification, null);
     }
 }

@@ -1,8 +1,10 @@
 package kr.njw.promotionbuilder.event.application;
 
+import io.awspring.cloud.sns.core.SnsTemplate;
 import kr.njw.promotionbuilder.common.dto.BaseResponseStatus;
 import kr.njw.promotionbuilder.common.exception.BaseException;
 import kr.njw.promotionbuilder.event.application.dto.*;
+import kr.njw.promotionbuilder.event.application.vo.EventChangeNotification;
 import kr.njw.promotionbuilder.event.entity.Event;
 import kr.njw.promotionbuilder.event.entity.vo.EventGiftBlock;
 import kr.njw.promotionbuilder.event.entity.vo.EventImageBlock;
@@ -40,6 +42,8 @@ class EventServiceImplTest {
     private EventServiceImpl eventService;
     @Mock
     private EventRepository eventRepository;
+    @Mock
+    private SnsTemplate snsTemplate;
     private Random random;
     private Faker faker;
     private LocalDateTime now;
@@ -314,6 +318,14 @@ class EventServiceImplTest {
                             event.getDeletedAt() == null
                     ));
 
+            then(this.snsTemplate)
+                    .should(times(1))
+                    .sendNotification(
+                            any(),
+                            argThat(notification -> ((EventChangeNotification) notification).getEventId().equals(testEvent.getId())),
+                            any()
+                    );
+
             assertThat(response.getId()).isEqualTo(testEvent.getId());
 
             reset(this.eventRepository);
@@ -356,6 +368,14 @@ class EventServiceImplTest {
                             event.getEndDateTime().equals(testOverwriteEvent.getEndDateTime()) &&
                             event.getDeletedAt() == null
                     ));
+
+            then(this.snsTemplate)
+                    .should(times(1))
+                    .sendNotification(
+                            any(),
+                            argThat(notification -> ((EventChangeNotification) notification).getEventId().equals(testBaseEvent.getId())),
+                            any()
+                    );
 
             assertThat(response.getId()).isEqualTo(testBaseEvent.getId());
 
@@ -438,6 +458,15 @@ class EventServiceImplTest {
             then(this.eventRepository)
                     .should(times(1))
                     .save(same(testReturnEvent));
+
+            then(this.snsTemplate)
+                    .should(times(1))
+                    .sendNotification(
+                            any(),
+                            argThat(notification -> ((EventChangeNotification) notification).getEventId().equals(testReturnEvent.getId())),
+                            any()
+                    );
+
             then(testReturnEvent).should(times(1)).delete();
         }
     }
