@@ -2,12 +2,12 @@ package kr.njw.promotionbuilder.user.entity;
 
 import jakarta.persistence.*;
 import kr.njw.promotionbuilder.common.security.Role;
-import kr.njw.promotionbuilder.user.entity.dto.UpdateUser;
+import kr.njw.promotionbuilder.user.entity.dto.UserProfile;
 import lombok.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -27,23 +27,23 @@ public class User {
     private String username;
 
     @Column(length = 100, nullable = false)
-    private String password;
-
-    @Column(length = 1000)
-    private String refreshToken;
-
-    @Column(length = 200)
     private String companyName;
 
-    @Column(length = 1000)
-    private String secretKey;
+    @Embedded
+    private Password password;
+
+    @Embedded
+    private SecretKey secretKey;
+
+    @Column(length = 500, unique = true)
+    private String refreshToken;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('ACTIVE', 'DEACTIVATE') default 'ACTIVE'",nullable = false)
+    @Column(columnDefinition = "ENUM('ACTIVE', 'DEACTIVATE') default 'ACTIVE'", nullable = false)
     private UserStatus status;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('ADMIN', 'USER', 'GUEST') default 'USER'", nullable = false)
+    @Column(columnDefinition = "ENUM('ADMIN', 'USER') default 'USER'", nullable = false)
     private Role role;
 
     @CreationTimestamp
@@ -54,41 +54,64 @@ public class User {
 
     private LocalDateTime deletedAt;
 
+    public static Password createPassword(String rawPassword, PasswordEncoder passwordEncoder) {
+        Password password = new Password();
+        password.password = passwordEncoder.encode(rawPassword);
+        return password;
+    }
+
+    public static SecretKey generateSecretKey() {
+        SecretKey secretKey = new SecretKey();
+        secretKey.secretKey = RandomStringUtils.random(64, "0123456789abcdef");
+        return secretKey;
+    }
+
     public void delete() {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void updateUser(UpdateUser updateUser) {
-        if (updateUser.getUsername() != null) this.username = updateUser.getUsername();
-        if ( updateUser.getPassword() != null ) this.password = encryptPassword(updateUser.getPassword());
-        if ( updateUser.getRefreshToken() != null ) this.refreshToken = updateUser.getRefreshToken();
-        if ( updateUser.getCompanyName() != null ) this.companyName = updateUser.getCompanyName();
-        if ( updateUser.getSecretKey() != null ) this.secretKey = updateUser.getSecretKey() ;
-
-        if ( updateUser.getStatus() != null ) {
-            this.status = updateUser.getStatus();
-            if (updateUser.getStatus().equals(UserStatus.DELETED)) this.deletedAt = LocalDateTime.now();
+    public void updateProfile(UserProfile profile) {
+        if (profile.getCompanyName() != null) {
+            this.companyName = profile.getCompanyName();
         }
-
-        if ( updateUser.getRole() != null ) this.role = updateUser.getRole();
     }
 
-    public void setRefreshToken(String refreshToken) {
+    public void changePassword(Password password) {
+        this.password = password;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 
     public enum UserStatus {
         ACTIVE,
-        DEACTIVATE,
-        DELETED
+        DEACTIVATE
     }
 
-    public static String encryptPassword(String password) {
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        return bCryptPasswordEncoder.encode(password);
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @EqualsAndHashCode
+    @Embeddable
+    public static class Password {
+        @Column(length = 100, nullable = false)
+        private String password;
+
+        @Override
+        public String toString() {
+            return this.password;
+        }
     }
 
-    public static String generateRandomHexString() {
-        return RandomStringUtils.random(32, "0123456789abcdef");
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @EqualsAndHashCode
+    @Embeddable
+    public static class SecretKey {
+        @Column(length = 100, nullable = false)
+        private String secretKey;
+
+        @Override
+        public String toString() {
+            return this.secretKey;
+        }
     }
 }
