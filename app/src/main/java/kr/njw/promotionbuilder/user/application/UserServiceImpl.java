@@ -1,13 +1,10 @@
 package kr.njw.promotionbuilder.user.application;
 
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import kr.njw.promotionbuilder.common.dto.BaseResponseStatus;
 import kr.njw.promotionbuilder.common.exception.BaseException;
-import kr.njw.promotionbuilder.common.security.JwtAuthenticationProvider;
 import kr.njw.promotionbuilder.common.security.Role;
-import kr.njw.promotionbuilder.common.utils.AuthUtils;
 import kr.njw.promotionbuilder.user.controller.dto.*;
 import kr.njw.promotionbuilder.user.entity.User;
 import kr.njw.promotionbuilder.user.entity.dto.UpdateUser;
@@ -24,7 +21,6 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final JwtAuthenticationProvider jwtAuthenticationProvider;
 
     @Override
     @Transactional(rollbackOn = Exception.class)

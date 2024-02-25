@@ -30,16 +30,11 @@ public class SpringSecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    public static final String[] whiteListUris = new String[]{
-            "/h2-console/**", "/actuator/health/**",
-            "/swagger-resources/**",
-            "/swagger-ui.html",
-            "/swagger-ui/**",
-            "/webjars/**",
-            "/swagger/**",
+    public static final String[] userWhiteListUris = new String[]{
             "/api/token/**",
             "/api/user/login",
-            "/api/user"
+            "/api/user/signup",
+            "/user/**"
     };
 
     @Bean
@@ -75,7 +70,8 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .requestMatchers("/api/events/**").hasAnyRole(Role.USER.getValue(), Role.ADMIN.getValue())
-                .anyRequest().permitAll();
+                .requestMatchers(userWhiteListUris).permitAll()
+                .anyRequest().authenticated();
 
         httpSecurity
                 .httpBasic().disable()
@@ -97,7 +93,7 @@ public class SpringSecurityConfig {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers(whiteListUris);
+        return (web) -> web.ignoring().requestMatchers(userWhiteListUris);
     }
 
     @Bean

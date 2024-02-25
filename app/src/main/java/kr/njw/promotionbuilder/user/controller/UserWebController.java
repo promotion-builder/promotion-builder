@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/user/")
+@RequestMapping("/user")
 public class UserWebController {
 
     @GetMapping("/login")
