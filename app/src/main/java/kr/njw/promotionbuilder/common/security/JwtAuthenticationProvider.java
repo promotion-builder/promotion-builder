@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -16,9 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,14 +26,14 @@ public class JwtAuthenticationProvider {
     private static final String AUTHORITIES_KEY = "authorities";
 
     private final String secret;
-    private final long durationSeconds;
+    private final long accessTokenDurationSeconds;
     private final long refreshTokenDurationSeconds;
 
     public JwtAuthenticationProvider(@Value("${app.security.jwt-secret}") String secret,
-                                     @Value("${app.security.jwt-token-duration-seconds}") long durationSeconds,
+                                     @Value("${app.security.jwt-access-token-duration-seconds}") long accessTokenDurationSeconds,
                                      @Value("${app.security.jwt-refresh-token-duration-seconds}") long refreshTokenDurationSeconds) {
         this.secret = Base64.getEncoder().encodeToString(secret.getBytes());
-        this.durationSeconds = durationSeconds;
+        this.accessTokenDurationSeconds = accessTokenDurationSeconds;
         this.refreshTokenDurationSeconds = refreshTokenDurationSeconds;
     }
 
@@ -45,16 +42,16 @@ public class JwtAuthenticationProvider {
         byte[] decodedKey = Base64.getDecoder().decode(keyString);
 
         // SecretKeySpec을 사용하여 SecretKey 생성
-        SecretKey secretKey = new SecretKeySpec(decodedKey, algorithm);
-
-        return secretKey;
+        return new SecretKeySpec(decodedKey, algorithm);
     }
 
-    public String createRefreshToken(String username, List<Role> roles) {
-        Claims claims = Jwts.claims().setSubject(username);
+    public String createAccessToken(Long userId, List<Role> roles) {
+        Instant now = Instant.now();
+
+        Claims claims = Jwts.claims().setSubject(String.valueOf(userId));
         claims.put(AUTHORITIES_KEY, roles.stream().map(Role::toAuthority).collect(Collectors.toList()));
-        claims.setExpiration(getExpireDateRefreshToken());
-        claims.setIssuedAt(new Date());
+        claims.setExpiration(Date.from(now.plusSeconds(this.accessTokenDurationSeconds)));
+        claims.setIssuedAt(Date.from(now));
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -62,21 +59,13 @@ public class JwtAuthenticationProvider {
                 .compact();
     }
 
-    private Date getExpireDateRefreshToken() {
-        long expireTimeMils = refreshTokenDurationSeconds * 1000L;
-        return new Date(System.currentTimeMillis() + expireTimeMils);
-    }
+    public String createRefreshToken(Long userId, List<Role> roles) {
+        Instant now = Instant.now();
 
-    private long getExpireDateCreateToken() {
-        Date now = new Date();
-        return now.getTime() + durationSeconds * 1000;
-    }
-
-    public String createToken(String username, List<Role> roles) {
-        Claims claims = Jwts.claims().setSubject(username);
+        Claims claims = Jwts.claims().setSubject(String.valueOf(userId));
         claims.put(AUTHORITIES_KEY, roles.stream().map(Role::toAuthority).collect(Collectors.toList()));
-        claims.setExpiration(new Date(getExpireDateCreateToken()));
-        claims.setIssuedAt(new Date());
+        claims.setExpiration(Date.from(now.plusSeconds(this.refreshTokenDurationSeconds)));
+        claims.setIssuedAt(Date.from(now));
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -84,7 +73,7 @@ public class JwtAuthenticationProvider {
                 .compact();
     }
 
-    public Optional<Authentication> getAuthentication(String token) {
+    public Optional<UsernamePasswordAuthenticationToken> getAuthentication(String token) {
         if (!this.validateToken(token)) {
             return Optional.empty();
         }
@@ -101,22 +90,33 @@ public class JwtAuthenticationProvider {
         return Optional.of(new UsernamePasswordAuthenticationToken(userDetails, "", authorities));
     }
 
+    public Optional<Long> getUserId(String token) {
+        Claims claims = this.getClaims(token);
+
+        if (claims == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(Long.valueOf(claims.getSubject()));
+    }
+
     public boolean validateToken(String token) {
+        Instant now = Instant.now();
+
         try {
             Claims claims = this.getClaims(token);
-            return claims.getExpiration().after(new Date());
+            return claims.getExpiration().after(Date.from(now));
         } catch (Exception e) {
             return false;
         }
     }
 
-    public String getUsername(String token) {
-        Claims claims = this.getClaims(token);
-        return claims.getSubject();
-    }
-
     private Claims getClaims(String token) {
-        return Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
+        try {
+            return Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(Claims claims) {
