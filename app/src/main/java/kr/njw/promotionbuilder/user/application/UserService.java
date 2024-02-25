@@ -10,4 +10,6 @@ public interface UserService {
     void changeUserPassword(Long userId, ChangePasswordRequest request);
 
     UserResponse findByUserId(Long userId);
+
+    boolean isUsernameUsed(String username);
 }

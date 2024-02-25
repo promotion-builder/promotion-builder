@@ -88,4 +88,10 @@ public class UserServiceImpl implements UserService {
         userResponse.setRole(user.getRole());
         return userResponse;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isUsernameUsed(String username) {
+        return this.userRepository.findByUsername(username).isPresent();
+    }
 }

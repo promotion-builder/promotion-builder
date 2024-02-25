@@ -26,6 +26,7 @@ public class SpringSecurityConfig {
     public static final String[] PUBLIC_URIS = new String[]{
             "/api/auth/**",
             "/api/users",
+            "/api/users/username",
             "/api/sample/**",
             "/user/**",
             "/sample/**"

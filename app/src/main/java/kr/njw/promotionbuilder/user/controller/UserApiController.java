@@ -1,6 +1,7 @@
 package kr.njw.promotionbuilder.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -35,7 +36,7 @@ public class UserApiController {
     }
 
     @SecurityRequirement(name = "accessToken")
-    @Operation(summary = "계정정보 수정", description = "")
+    @Operation(summary = "내 계정정보 수정", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", content = @Content()),
@@ -53,7 +54,7 @@ public class UserApiController {
     }
 
     @SecurityRequirement(name = "accessToken")
-    @Operation(summary = "비밀번호 수정", description = "")
+    @Operation(summary = "내 비밀번호 수정", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", content = @Content()),
@@ -71,7 +72,7 @@ public class UserApiController {
     }
 
     @SecurityRequirement(name = "accessToken")
-    @Operation(summary = "계정정보 조회", description = "")
+    @Operation(summary = "내 계정정보 조회", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "400", content = @Content()),
@@ -80,8 +81,20 @@ public class UserApiController {
             @ApiResponse(responseCode = "404", content = @Content()),
     })
     @GetMapping("/me")
-    public ResponseEntity<BaseResponse<UserResponse>> findByUserId(Principal principal) {
+    public ResponseEntity<BaseResponse<UserResponse>> findById(Principal principal) {
         UserResponse response = this.userService.findByUserId(Long.valueOf(principal.getName()));
         return ResponseEntity.ok().body(new BaseResponse<>(response));
+    }
+
+    @Operation(summary = "아이디 중복체크", description = """
+            result가 true면 아이디가 이미 존재함. false면 아이디가 존재하지 않음
+            """)
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content()),
+    })
+    @GetMapping("/username")
+    public ResponseEntity<BaseResponse<Boolean>> findByUsername(@Parameter(example = "eddyid") @RequestParam(name = "q") String username) {
+        return ResponseEntity.ok().body(new BaseResponse<>(this.userService.isUsernameUsed(username)));
     }
 }
