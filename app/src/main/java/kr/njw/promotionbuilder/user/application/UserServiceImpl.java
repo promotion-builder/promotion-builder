@@ -66,7 +66,11 @@ public class UserServiceImpl implements UserService {
         User user = this.userRepository.findByIdAndDeletedAtNull(userId)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FOUND));
 
-        user.changePassword(User.createPassword(request.getPassword(), this.passwordEncoder));
+        if (!this.passwordEncoder.matches(request.getOldPassword(), user.getPassword().toString())) {
+            throw new BaseException(BaseResponseStatus.INVALID_PASSWORD);
+        }
+
+        user.changePassword(User.createPassword(request.getNewPassword(), this.passwordEncoder));
         this.userRepository.save(user);
     }
 

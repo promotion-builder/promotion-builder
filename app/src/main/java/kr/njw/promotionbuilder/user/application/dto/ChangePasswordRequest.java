@@ -7,8 +7,12 @@ import lombok.Data;
 
 @Data
 public class ChangePasswordRequest {
-    @Schema(description = "비밀번호", example = "password1234")
-    @NotBlank(message = "비밀번호를 입력해주세요.")
+    @Schema(description = "이전 비밀번호", example = "password1234")
+    @NotBlank(message = "이전 비밀번호를 입력해주세요.")
+    private String oldPassword;
+
+    @Schema(description = "새 비밀번호", example = "password1234")
+    @NotBlank(message = "새 비밀번호를 입력해주세요.")
     @Size(min = 8, message = "비밀번호는 8자 이상으로 입력해주세요.")
-    private String password;
+    private String newPassword;
 }

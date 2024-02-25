@@ -20,6 +20,7 @@ public enum BaseResponseStatus {
 
     // user (20xxx)
     DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, 20001, "이미 존재하는 아이디입니다."),
+    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, 20002, "비밀번호가 올바르지 않습니다."),
 
     // sample (98xxx)
     SAMPLE_BAD_NAME(HttpStatus.BAD_REQUEST, 98001, "금지된 키워드가 포함되어 있습니다."),
