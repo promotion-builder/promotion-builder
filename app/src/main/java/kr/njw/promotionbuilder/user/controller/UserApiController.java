@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import kr.njw.promotionbuilder.auth.application.TokenService;
 import kr.njw.promotionbuilder.common.dto.BaseResponse;
 import kr.njw.promotionbuilder.user.application.UserService;
 import kr.njw.promotionbuilder.user.application.dto.*;
@@ -23,7 +22,6 @@ import java.security.Principal;
 @RequestMapping("/api/users")
 public class UserApiController {
     private final UserService userService;
-    private final TokenService tokenService;
 
     @Operation(summary = "신규 가입", description = "")
     @ApiResponses({

@@ -22,7 +22,7 @@ public class AuthUtils {
     public static String getRefreshToken(HttpServletRequest request) {
         String bearerToken = AuthUtils.getBearerToken(request);
 
-        if (!bearerToken.equals("")) {
+        if (!bearerToken.isEmpty()) {
             return bearerToken;
         }
 
