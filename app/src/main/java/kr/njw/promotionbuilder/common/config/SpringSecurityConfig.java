@@ -27,7 +27,7 @@ public class SpringSecurityConfig {
             "/api/auth/**",
             "/api/users",
             "/api/users/username",
-            "/api/sample/**",
+            "/api/samples/**",
             "/user/**",
             "/sample/**"
     };
