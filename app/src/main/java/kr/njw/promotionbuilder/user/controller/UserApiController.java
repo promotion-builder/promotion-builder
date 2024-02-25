@@ -1,127 +1,89 @@
 package kr.njw.promotionbuilder.user.controller;
 
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import kr.njw.promotionbuilder.authentication.application.AuthenticationService;
-import kr.njw.promotionbuilder.authentication.controller.dto.LoginApiRequest;
+import kr.njw.promotionbuilder.auth.application.TokenService;
 import kr.njw.promotionbuilder.common.dto.BaseResponse;
-import kr.njw.promotionbuilder.common.dto.BaseResponseStatus;
-import kr.njw.promotionbuilder.common.dto.Login;
-import kr.njw.promotionbuilder.user.application.UserServiceImpl;
-import kr.njw.promotionbuilder.user.controller.dto.*;
+import kr.njw.promotionbuilder.user.application.UserService;
+import kr.njw.promotionbuilder.user.application.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 
-@RestController
-@RequestMapping("/api/user")
+@Validated
 @RequiredArgsConstructor
+@RestController
+@RequestMapping("/api/users")
 public class UserApiController {
-    private final UserServiceImpl userService;
-    private final AuthenticationService authenticationService;
+    private final UserService userService;
+    private final TokenService tokenService;
 
     @Operation(summary = "신규 가입", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "302"),
             @ApiResponse(responseCode = "400", content = @Content()),
-            @ApiResponse(responseCode = "404", content = @Content())
     })
-    @PostMapping(value = "/signup", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<CreateUserResponse> signUp(
-            @Valid @RequestBody UserSignUpRequest userSignUpRequest) {
-
-        CreateUserResponse createUserResponse = userService.signUp(userSignUpRequest);
-
-        return ResponseEntity.ok().body(createUserResponse);
+    @PostMapping("")
+    public ResponseEntity<BaseResponse<SignUpResponse>> signUp(@Valid @RequestBody SignUpRequest request) {
+        SignUpResponse response = this.userService.signUp(request);
+        return ResponseEntity.ok().body(new BaseResponse<>(response));
     }
 
-    @Operation(summary = "계정 정보 수정", description = "")
+    @SecurityRequirement(name = "accessToken")
+    @Operation(summary = "계정정보 수정", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "302"),
             @ApiResponse(responseCode = "400", content = @Content()),
-            @ApiResponse(responseCode = "404", content = @Content())
+            @ApiResponse(responseCode = "401", content = @Content()),
+            @ApiResponse(responseCode = "403", content = @Content()),
+            @ApiResponse(responseCode = "404", content = @Content()),
     })
-    @PutMapping(value = "/{username}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<Object> updateUser(
-            @PathVariable(value = "username") String username,
-            @Valid @RequestBody UserUpdateRequest userUpdateRequest) {
-
-        userService.updateUser(username, userUpdateRequest);
-        return ResponseEntity.ok().body(new BaseResponse(BaseResponseStatus.SUCCESS));
+    @PatchMapping("/me")
+    public ResponseEntity<BaseResponse<Boolean>> updateUserProfile(
+            Principal principal,
+            @Valid @RequestBody UpdateUserProfileRequest request
+    ) {
+        this.userService.updateUserProfile(Long.valueOf(principal.getName()), request);
+        return ResponseEntity.ok().body(new BaseResponse<>(true));
     }
 
+    @SecurityRequirement(name = "accessToken")
     @Operation(summary = "비밀번호 수정", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "302"),
             @ApiResponse(responseCode = "400", content = @Content()),
-            @ApiResponse(responseCode = "404", content = @Content())
+            @ApiResponse(responseCode = "401", content = @Content()),
+            @ApiResponse(responseCode = "403", content = @Content()),
+            @ApiResponse(responseCode = "404", content = @Content()),
     })
-    @PutMapping(value = "/password/{username}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<Object> updatePassword(
-            @PathVariable(value = "username") String username,
-            @Valid @RequestBody UserPasswordUpdateRequest userPasswordUpdateRequest) {
-
-        userService.updateUserPassword(username, userPasswordUpdateRequest);
-        return ResponseEntity.ok().body(new BaseResponse(BaseResponseStatus.SUCCESS));
+    @PatchMapping("/me/password")
+    public ResponseEntity<BaseResponse<Boolean>> changePassword(
+            Principal principal,
+            @Valid @RequestBody ChangePasswordRequest request
+    ) {
+        this.userService.changeUserPassword(Long.valueOf(principal.getName()), request);
+        return ResponseEntity.ok().body(new BaseResponse<>(true));
     }
 
-    @Operation(summary = "user id 수정", description = "")
+    @SecurityRequirement(name = "accessToken")
+    @Operation(summary = "계정정보 조회", description = "")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "302"),
             @ApiResponse(responseCode = "400", content = @Content()),
-            @ApiResponse(responseCode = "404", content = @Content())
+            @ApiResponse(responseCode = "401", content = @Content()),
+            @ApiResponse(responseCode = "403", content = @Content()),
+            @ApiResponse(responseCode = "404", content = @Content()),
     })
-    @PutMapping(value = "/username/{username}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<Object> updateUsername(
-            @PathVariable(value = "username") String username,
-            @Valid @RequestBody UsernameUpdateRequest usernameUpdateRequest) {
-
-        userService.updateUsername(username, usernameUpdateRequest);
-        return ResponseEntity.ok().body(new BaseResponse(BaseResponseStatus.SUCCESS));
-    }
-
-    @Operation(summary = "계정 정보 호출", description = "")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "302"),
-            @ApiResponse(responseCode = "400", content = @Content()),
-            @ApiResponse(responseCode = "404", content = @Content())
-    })
-    @GetMapping(value = "/{username}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<Object> findByUsername(
-            @PathVariable(value = "username") String username) {
-        UserDto byUsername = userService.findByUsername(username);
-        return ResponseEntity.ok().body(byUsername);
-    }
-
-
-    @Operation(summary = "유저 로그인", description = "")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "302"),
-            @ApiResponse(responseCode = "400", content = @Content()),
-            @ApiResponse(responseCode = "404", content = @Content())
-    })
-    @PostMapping("/login")
-    public ResponseEntity<Object> login(
-            @Valid @RequestBody LoginApiRequest loginApiRequest, HttpServletResponse response) {
-        String token =
-                authenticationService.login(Login.init(
-                        loginApiRequest.getUsername(),
-                        loginApiRequest.getPassword()
-                ));
-
-        response.setHeader("Authorization", "Bearer " +token);
-        return ResponseEntity.ok().build();
+    @GetMapping("/me")
+    public ResponseEntity<BaseResponse<UserResponse>> findByUserId(Principal principal) {
+        UserResponse response = this.userService.findByUserId(Long.valueOf(principal.getName()));
+        return ResponseEntity.ok().body(new BaseResponse<>(response));
     }
 }
