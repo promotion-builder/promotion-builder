@@ -2,6 +2,7 @@ package kr.njw.promotionbuilder.user.entity;
 
 import jakarta.persistence.*;
 import kr.njw.promotionbuilder.common.security.Role;
+import kr.njw.promotionbuilder.user.entity.dto.UpdateUser;
 import lombok.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.annotations.CreationTimestamp;
@@ -57,9 +58,19 @@ public class User {
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void updateUser(String password, String companyName) {
-        this.password = password;
-        this.companyName = companyName;
+    public void updateUser(UpdateUser updateUser) {
+        if (updateUser.getUsername() != null) this.username = updateUser.getUsername();
+        if ( updateUser.getPassword() != null ) this.password = encryptPassword(updateUser.getPassword());
+        if ( updateUser.getRefreshToken() != null ) this.refreshToken = updateUser.getRefreshToken();
+        if ( updateUser.getCompanyName() != null ) this.companyName = updateUser.getCompanyName();
+        if ( updateUser.getSecretKey() != null ) this.secretKey = updateUser.getSecretKey() ;
+
+        if ( updateUser.getStatus() != null ) {
+            this.status = updateUser.getStatus();
+            if (updateUser.getStatus().equals(UserStatus.DELETED)) this.deletedAt = LocalDateTime.now();
+        }
+
+        if ( updateUser.getRole() != null ) this.role = updateUser.getRole();
     }
 
     public void setRefreshToken(String refreshToken) {

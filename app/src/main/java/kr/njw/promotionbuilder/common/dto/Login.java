@@ -10,14 +10,14 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Login {
-    private String memberId;
+    private String username;
     private String password;
 
-    public static Login init(String memberId,
+    public static Login init(String username,
                              String password
     ) {
         return Login.builder()
-                .memberId(memberId)
+                .username(username)
                 .password(password)
                 .build();
     }

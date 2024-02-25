@@ -1,4 +1,4 @@
-package kr.njw.promotionbuilder.user.services.dto;
+package kr.njw.promotionbuilder.user.application.dto;
 
 
 import lombok.Getter;

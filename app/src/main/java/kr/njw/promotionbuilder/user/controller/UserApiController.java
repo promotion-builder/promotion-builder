@@ -5,16 +5,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import kr.njw.promotionbuilder.authentication.application.AuthenticationService;
 import kr.njw.promotionbuilder.authentication.controller.dto.LoginApiRequest;
+import kr.njw.promotionbuilder.common.dto.BaseResponse;
+import kr.njw.promotionbuilder.common.dto.BaseResponseStatus;
 import kr.njw.promotionbuilder.common.dto.Login;
-import kr.njw.promotionbuilder.user.controller.dto.CreateUserResponse;
-import kr.njw.promotionbuilder.user.controller.dto.UserDto;
-import kr.njw.promotionbuilder.user.controller.dto.UserSignUpRequest;
-import kr.njw.promotionbuilder.user.controller.dto.UserUpdateRequest;
-import kr.njw.promotionbuilder.user.services.UserServiceImpl;
+import kr.njw.promotionbuilder.user.controller.dto.*;
+import kr.njw.promotionbuilder.user.application.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,15 +51,46 @@ public class UserApiController {
             @ApiResponse(responseCode = "400", content = @Content()),
             @ApiResponse(responseCode = "404", content = @Content())
     })
-    @PutMapping(value = "/{userId}", produces = "application/json; charset=UTF-8")
-    public ResponseEntity<Object> updateUser(@PathVariable String userId,
-                                             @Valid @RequestBody UserUpdateRequest userUpdateRequest) {
+    @PutMapping(value = "/{username}", produces = "application/json; charset=UTF-8")
+    public ResponseEntity<Object> updateUser(
+            @PathVariable(value = "username") String username,
+            @Valid @RequestBody UserUpdateRequest userUpdateRequest) {
 
-        if (userId != null) {
-            userService.updateUser(userId, userUpdateRequest);
-        }
+        userService.updateUser(username, userUpdateRequest);
+        return ResponseEntity.ok().body(new BaseResponse(BaseResponseStatus.SUCCESS));
+    }
 
-        return ResponseEntity.ok().build();
+    @Operation(summary = "비밀번호 수정", description = "")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "302"),
+            @ApiResponse(responseCode = "400", content = @Content()),
+            @ApiResponse(responseCode = "404", content = @Content())
+    })
+    @PutMapping(value = "/password/{username}", produces = "application/json; charset=UTF-8")
+    public ResponseEntity<Object> updatePassword(
+            @PathVariable(value = "username") String username,
+            @Valid @RequestBody UserPasswordUpdateRequest userPasswordUpdateRequest) {
+
+        userService.updateUserPassword(username, userPasswordUpdateRequest);
+        return ResponseEntity.ok().body(new BaseResponse(BaseResponseStatus.SUCCESS));
+    }
+
+    @Operation(summary = "user id 수정", description = "")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "302"),
+            @ApiResponse(responseCode = "400", content = @Content()),
+            @ApiResponse(responseCode = "404", content = @Content())
+    })
+    @PutMapping(value = "/username/{username}", produces = "application/json; charset=UTF-8")
+    public ResponseEntity<Object> updateUsername(
+            @PathVariable(value = "username") String username,
+            @Valid @RequestBody UsernameUpdateRequest usernameUpdateRequest,
+            @NotNull HttpServletResponse response) {
+
+        userService.updateUsername(username, usernameUpdateRequest);
+        return ResponseEntity.ok().body(new BaseResponse(BaseResponseStatus.SUCCESS));
     }
 
     @Operation(summary = "계정 정보 호출", description = "")

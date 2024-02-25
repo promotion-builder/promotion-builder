@@ -31,7 +31,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     public String login(Login login) {
         User user =
-                userRepository.findUserByUsernameAndDeletedAtNull(login.getMemberId())
+                userRepository.findUserByUsernameAndDeletedAtNull(login.getUsername())
                         .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FOUND_USER));
 
         if (!passwordEncoder.matches(login.getPassword(), user.getPassword()))
@@ -53,7 +53,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     public TokenResponse issue(Login login) {
         User user =
-                userRepository.findUserByUsernameAndDeletedAtNull(login.getMemberId())
+                userRepository.findUserByUsernameAndDeletedAtNull(login.getUsername())
                         .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FOUND_USER));
 
         if (!passwordEncoder.matches(login.getPassword(), user.getPassword()))
@@ -86,12 +86,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (needNewLogin(accessToken, refreshToken)) throw new BaseException(BaseResponseStatus.NEED_NEW_LOGIN);
 
         if (needReinssuranceAccessTokenOnly(accessToken)) {
-            String newRefreshToken = jwtAuthenticationProvider.createRefreshToken(user.getUsername(), roles);
-            user.setRefreshToken(newRefreshToken);
-            userRepository.saveAndFlush(user);
-
             return TokenResponse.builder()
-                    .refreshToken(newRefreshToken)
+                    .refreshToken(refreshToken)
                     .accessToken(jwtAuthenticationProvider.createToken(user.getUsername(), roles))
                     .build();
         }

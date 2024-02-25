@@ -38,7 +38,8 @@ public class SpringSecurityConfig {
             "/webjars/**",
             "/swagger/**",
             "/api/token/**",
-            "/user/**"
+            "/api/user/login",
+            "/api/user"
     };
 
     @Bean

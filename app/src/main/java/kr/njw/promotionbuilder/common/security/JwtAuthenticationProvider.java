@@ -110,6 +110,11 @@ public class JwtAuthenticationProvider {
         }
     }
 
+    public String getUsername(String token) {
+        Claims claims = this.getClaims(token);
+        return claims.getSubject();
+    }
+
     private Claims getClaims(String token) {
         return Jwts.parser().setSigningKey(this.secret).parseClaimsJws(token).getBody();
     }
