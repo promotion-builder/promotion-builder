@@ -37,7 +37,8 @@ public class SpringSecurityConfig {
             "/swagger-ui/**",
             "/webjars/**",
             "/swagger/**",
-            "/api/token/**"
+            "/api/token/**",
+            "/user/**"
     };
 
     @Bean

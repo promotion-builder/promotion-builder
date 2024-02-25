@@ -9,7 +9,6 @@
 </head>
 <body>
 
-
 <div>
     <div>
         아이디 : <input type="text" id="username"/>
@@ -19,7 +18,6 @@
     </div>
     <div>
         <input type="button" id="login" value="로그인" onclick="login()"/>
-
     </div>
 </div>
 </body>
@@ -30,7 +28,6 @@
             "username" : document.getElementById("username").value,
             "password" : document.getElementById("password").value
         }).then((response) => {
-            console.log(response);
             if (response.status === 200) {
                 window.response = response;
 
@@ -41,7 +38,7 @@
                     title: '성공!',
                     text: '작업이 성공적으로 완료되었습니다.'
                 }).then(function (response) {
-                    if (response.isConfirmed) window.location.href = "/main.html";
+                    if (response.isConfirmed) window.location.href = "http://localhost:8080/user/main";
                 });
             } else {
                 Swal.fire({
