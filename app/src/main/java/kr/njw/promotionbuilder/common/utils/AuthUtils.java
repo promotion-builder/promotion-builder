@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 public class AuthUtils {
-    public static final String REFRESH_TOKEN_KEY = "app_refresh_token";
+    public static final String REFRESH_TOKEN_KEY = "promotion_builder_refresh_token";
     private static final String BEARER_PREFIX = "Bearer ";
 
     public static void setRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
