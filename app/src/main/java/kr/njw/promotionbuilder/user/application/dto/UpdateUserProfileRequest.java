@@ -1,4 +1,4 @@
-package kr.njw.promotionbuilder.user.controller.dto;
+package kr.njw.promotionbuilder.user.application.dto;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,9 +7,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class UserUpdateRequest {
+public class UpdateUserProfileRequest {
     @Schema(description = "기업명", example = "홍콩반점")
-    @NotBlank(message = "[필수]기업명 입력해 주세요.")
-    @Size(max = 200, message = "기업명으로 설정할 수 있는 최대 글자를 초과 하였습니다.")
+    @NotBlank(message = "기업명을 입력해주세요.")
+    @Size(max = 50, message = "기업명은 50자 이하로 입력해주세요.")
     private String companyName;
 }

@@ -1,18 +1,18 @@
 package kr.njw.promotionbuilder.user.application;
 
 
-import jakarta.transaction.Transactional;
 import kr.njw.promotionbuilder.common.dto.BaseResponseStatus;
 import kr.njw.promotionbuilder.common.exception.BaseException;
 import kr.njw.promotionbuilder.common.security.Role;
-import kr.njw.promotionbuilder.user.controller.dto.*;
+import kr.njw.promotionbuilder.user.application.dto.*;
 import kr.njw.promotionbuilder.user.entity.User;
-import kr.njw.promotionbuilder.user.entity.dto.UpdateUser;
-import kr.njw.promotionbuilder.user.entity.mapper.UserMapper;
+import kr.njw.promotionbuilder.user.entity.dto.UserProfile;
 import kr.njw.promotionbuilder.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Slf4j
@@ -20,75 +20,68 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
+    private final UserProfile.Factory userProfileFactory;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    @Transactional(rollbackOn = Exception.class)
-    public CreateUserResponse signUp(UserSignUpRequest userSignUpRequest) {
-        User user = User.builder()
-                .username(userSignUpRequest.getUsername())
-                .password(User.encryptPassword(userSignUpRequest.getPassword()))
-                .secretKey(User.generateRandomHexString())
-                .companyName(userSignUpRequest.getCompanyName())
-                .role(Role.USER)
-                .status(User.UserStatus.ACTIVE)
-                .build();
-
-        userRepository.save(user);
-        return CreateUserResponse.builder()
-                .id(user.getId())
-                .secretKey(user.getSecretKey())
-                .build();
-    }
-
-    @Override
-    @Transactional(rollbackOn = Exception.class)
-    public void updateUser(String username, UserUpdateRequest userUpdateRequest) {
-        User user = userRepository.findUserByUsernameAndDeletedAtNull(username)
-                .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FOUND));
-
-        UpdateUser updateUser = userMapper.toUpdateUser(user);
-        updateUser.setCompanyName(userUpdateRequest.getCompanyName());
-        user.updateUser(updateUser);
-    }
-
-    @Override
-    @Transactional(rollbackOn = Exception.class)
-    public void updateUserPassword(String username, UserPasswordUpdateRequest userPasswordUpdateRequest) {
-        User user = userRepository.findUserByUsernameAndDeletedAtNull(username)
-                .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FOUND_USER));
-
-        UpdateUser updateUser = userMapper.toUpdateUser(user);
-        updateUser.setPassword(userPasswordUpdateRequest.getPassword());
-        user.updateUser(updateUser);
-    }
-
-    @Override
-    @Transactional(rollbackOn = Exception.class)
-    public void updateUsername(String usedUsername, UsernameUpdateRequest usernameUpdateRequest) {
-        User user = userRepository.findUserByUsernameAndDeletedAtNull(usedUsername)
-                .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FOUND_USER));
-
-        if (userRepository.findUserByUsernameAndDeletedAtNull(usernameUpdateRequest.getUsername())
-                .isPresent()) {
-                throw new BaseException(BaseResponseStatus.DUPLICATED_USER);
+    @Transactional
+    public SignUpResponse signUp(SignUpRequest request) {
+        if (this.userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new BaseException(BaseResponseStatus.DUPLICATED_USERNAME);
         }
 
-        UpdateUser updateUser = userMapper.toUpdateUser(user);
-        updateUser.setUsername(usernameUpdateRequest.getUsername());
+        User user = User.builder()
+                .username(request.getUsername())
+                .companyName(request.getCompanyName())
+                .password(User.createPassword(request.getPassword(), this.passwordEncoder))
+                .secretKey(User.generateSecretKey())
+                .refreshToken(null)
+                .status(User.UserStatus.ACTIVE)
+                .role(Role.USER)
+                .build();
 
-        user.updateUser(updateUser);
+        this.userRepository.saveAndFlush(user);
+
+        return SignUpResponse.builder()
+                .id(user.getId())
+                .build();
     }
 
     @Override
-    public UserDto findByUsername(String username) {
-        User user = userRepository.findUserByUsernameAndDeletedAtNull(username)
+    @Transactional
+    public void updateUserProfile(Long userId, UpdateUserProfileRequest request) {
+        User user = this.userRepository.findByIdAndDeletedAtNull(userId)
                 .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FOUND));
 
-        return UserDto.builder()
-                .refreshToken(user.getRefreshToken())
-                .role(user.getRole())
-                .username(user.getUsername())
-                .build();
+        UserProfile profile = this.userProfileFactory.generate();
+        profile.setCompanyName(request.getCompanyName());
+
+        user.updateProfile(profile);
+        this.userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void changeUserPassword(Long userId, ChangePasswordRequest request) {
+        User user = this.userRepository.findByIdAndDeletedAtNull(userId)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FOUND));
+
+        user.changePassword(User.createPassword(request.getPassword(), this.passwordEncoder));
+        this.userRepository.save(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserResponse findByUserId(Long userId) {
+        User user = this.userRepository.findByIdAndDeletedAtNull(userId)
+                .orElseThrow(() -> new BaseException(BaseResponseStatus.NOT_FOUND));
+
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setUsername(user.getUsername());
+        userResponse.setCompanyName(user.getCompanyName());
+        userResponse.setSecretKey(user.getSecretKey().toString());
+        userResponse.setRole(user.getRole());
+        return userResponse;
     }
 }

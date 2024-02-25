@@ -1,16 +1,13 @@
 package kr.njw.promotionbuilder.user.application;
 
-import jakarta.servlet.http.HttpServletRequest;
-import kr.njw.promotionbuilder.user.controller.dto.*;
+import kr.njw.promotionbuilder.user.application.dto.*;
 
 public interface UserService {
-    CreateUserResponse signUp(UserSignUpRequest userSignUpRequest);
+    SignUpResponse signUp(SignUpRequest request);
 
-    void updateUser(String username, UserUpdateRequest userUpdateRequest);
+    void updateUserProfile(Long userId, UpdateUserProfileRequest request);
 
-    void updateUserPassword(String username, UserPasswordUpdateRequest userPasswordUpdateRequest);
+    void changeUserPassword(Long userId, ChangePasswordRequest request);
 
-    void updateUsername(String username, UsernameUpdateRequest usernameUpdateRequest);
-
-    UserDto findByUsername(String username);
+    UserResponse findByUserId(Long userId);
 }
