@@ -12,3 +12,8 @@ server:
   error:
     whitelabel:
       enabled: false
+
+management:
+  endpoint:
+    health:
+      show-details: never

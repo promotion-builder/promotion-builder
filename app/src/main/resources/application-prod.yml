@@ -16,6 +16,15 @@ server:
     whitelabel:
       enabled: false
 
+management:
+  endpoint:
+    health:
+      show-details: never
+
+sentry:
+  dsn: ${APP_SENTRY_DSN}
+  traces-sample-rate: 1.0
+
 decorator:
   datasource:
     p6spy:

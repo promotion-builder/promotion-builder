@@ -12,6 +12,7 @@ plugins {
     id 'org.springframework.boot' version '3.0.6'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'com.adarshr.test-logger' version '4.0.0'
+    id 'io.sentry.jvm.gradle' version '4.3.0'
 }
 
 group = 'kr.njw'
@@ -93,6 +94,13 @@ tasks.withType(JavaCompile) {
 
 clean.doLast {
     file(generated).deleteDir()
+}
+
+sentry {
+    includeSourceContext = true
+    org = "njw1204"
+    projectName = "promotion-builder"
+    authToken = System.getenv("APP_SENTRY_AUTH_TOKEN")
 }
 
 jacoco {

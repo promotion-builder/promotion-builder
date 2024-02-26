@@ -132,10 +132,10 @@ public class RestControllerExceptionAdvice {
 
     private void logException(Level level, Exception e, HttpServletRequest request) {
         if (level == Level.ERROR || !this.environment.acceptsProfiles(Profiles.of("prod"))) {
-            log.atLevel(level).log(e.getMessage(), e);
+            log.atLevel(level).log("[{}] Error Detail", e.hashCode(), e);
         }
 
-        log.atLevel(level).log("[{}] method: {} | url: {} | message: {}",
-                e.getClass().getName(), request.getMethod(), UriComponentsBuilder.fromHttpRequest(new ServletServerHttpRequest(request)).build().toUriString(), e.getMessage());
+        log.atLevel(Level.INFO).log("[{}] Method: {} | URL: {} | Message: {}",
+                e.hashCode(), request.getMethod(), UriComponentsBuilder.fromHttpRequest(new ServletServerHttpRequest(request)).build().toUriString(), e.getMessage());
     }
 }
