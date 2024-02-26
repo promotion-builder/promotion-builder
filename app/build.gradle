@@ -100,7 +100,7 @@ sentry {
     includeSourceContext = true
     org = "njw1204"
     projectName = "promotion-builder"
-    authToken = System.getenv("APP_SENTRY_AUTH_TOKEN")
+    authToken = System.getenv("SENTRY_AUTH_TOKEN")
 }
 
 jacoco {

@@ -46,6 +46,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: app
+          build-args: |
+            "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}"
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
