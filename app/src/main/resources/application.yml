@@ -11,6 +11,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${APP_DB_USERNAME}
     password: ${APP_DB_PASSWORD}
+    hikari:
+      transaction-isolation: TRANSACTION_READ_COMMITTED
   jpa:
     hibernate:
       ddl-auto: validate
