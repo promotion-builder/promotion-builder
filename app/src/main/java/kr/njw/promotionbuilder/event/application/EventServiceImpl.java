@@ -92,8 +92,6 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public CreateEventResponse createEvent(CreateEventRequest request) {
-        // TODO: 유저 상태 검증
-
         request.getBlocks().forEach(EventBlock::issueId);
 
         Event event = Event.builder()
@@ -119,8 +117,6 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public EditEventResponse editEvent(EditEventRequest request) {
-        // TODO: 유저 상태 검증
-
         Event oldEvent = this.eventRepository.findByIdAndDeletedAtNull(request.getId()).orElse(null);
 
         if (oldEvent == null || !Objects.equals(oldEvent.getUserId(), request.getUserId())) {
@@ -153,8 +149,6 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public void deleteEvent(DeleteEventRequest request) {
-        // TODO: 유저 상태 검증
-
         Event event = this.eventRepository.findByIdAndDeletedAtNull(request.getId()).orElse(null);
 
         if (event == null || !Objects.equals(event.getUserId(), request.getUserId())) {
