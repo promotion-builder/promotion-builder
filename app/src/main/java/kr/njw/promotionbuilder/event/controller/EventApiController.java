@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Positive;
 import kr.njw.promotionbuilder.common.dto.BaseResponse;
 import kr.njw.promotionbuilder.common.dto.BaseResponseStatus;
 import kr.njw.promotionbuilder.common.exception.BaseException;
+import kr.njw.promotionbuilder.common.utils.AuthUtils;
 import kr.njw.promotionbuilder.event.application.EventService;
 import kr.njw.promotionbuilder.event.application.dto.*;
 import kr.njw.promotionbuilder.event.controller.dto.CreateEventApiRequest;
@@ -54,7 +55,7 @@ public class EventApiController {
             Integer pagingSize
     ) {
         FindEventsRequest request = new FindEventsRequest();
-        request.setUserId(Long.valueOf(principal.getName()));
+        request.setUserId(AuthUtils.getUserId(principal));
         request.setPage(page);
         request.setPagingSize(pagingSize);
 
@@ -80,7 +81,7 @@ public class EventApiController {
             String eventId
     ) {
         FindEventRequest request = new FindEventRequest();
-        request.setUserId(Long.valueOf(principal.getName()));
+        request.setUserId(AuthUtils.getUserId(principal));
         request.setId(eventId);
 
         FindEventResponse response = this.eventService.findEvent(request).orElse(null);
@@ -103,7 +104,7 @@ public class EventApiController {
     public ResponseEntity<BaseResponse<CreateEventResponse>> createEvent(Principal principal,
                                                                          @Valid @RequestBody CreateEventApiRequest apiRequest) {
         CreateEventRequest request = new CreateEventRequest();
-        request.setUserId(Long.valueOf(principal.getName()));
+        request.setUserId(AuthUtils.getUserId(principal));
         request.setTitle(apiRequest.getTitle());
         request.setDescription(apiRequest.getDescription());
         request.setBannerImage(apiRequest.getBannerImage());
@@ -135,7 +136,7 @@ public class EventApiController {
     ) {
         EditEventRequest request = new EditEventRequest();
         request.setId(eventId);
-        request.setUserId(Long.valueOf(principal.getName()));
+        request.setUserId(AuthUtils.getUserId(principal));
         request.setTitle(apiRequest.getTitle());
         request.setDescription(apiRequest.getDescription());
         request.setBannerImage(apiRequest.getBannerImage());
@@ -164,7 +165,7 @@ public class EventApiController {
     ) {
         DeleteEventRequest request = new DeleteEventRequest();
         request.setId(eventId);
-        request.setUserId(Long.valueOf(principal.getName()));
+        request.setUserId(AuthUtils.getUserId(principal));
 
         this.eventService.deleteEvent(request);
 

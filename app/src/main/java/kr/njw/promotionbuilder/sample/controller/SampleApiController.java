@@ -11,6 +11,7 @@ import jakarta.validation.constraints.*;
 import kr.njw.promotionbuilder.common.dto.BaseResponse;
 import kr.njw.promotionbuilder.common.dto.BaseResponseStatus;
 import kr.njw.promotionbuilder.common.exception.BaseException;
+import kr.njw.promotionbuilder.common.utils.AuthUtils;
 import kr.njw.promotionbuilder.sample.application.SampleService;
 import kr.njw.promotionbuilder.sample.application.dto.*;
 import kr.njw.promotionbuilder.sample.controller.dto.CreateSampleApiRequest;
@@ -103,7 +104,7 @@ public class SampleApiController {
         }
 
         CreateSampleRequest request = new CreateSampleRequest();
-        request.setUserId(Long.valueOf(principal.getName()));
+        request.setUserId(AuthUtils.getUserId(principal));
         request.setName(apiRequest.getName());
         request.setStatus(apiRequest.getStatus());
 

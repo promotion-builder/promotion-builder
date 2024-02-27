@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import kr.njw.promotionbuilder.common.dto.BaseResponse;
+import kr.njw.promotionbuilder.common.utils.AuthUtils;
 import kr.njw.promotionbuilder.user.application.UserService;
 import kr.njw.promotionbuilder.user.application.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,7 @@ public class UserApiController {
             Principal principal,
             @Valid @RequestBody UpdateUserProfileRequest request
     ) {
-        this.userService.updateUserProfile(Long.valueOf(principal.getName()), request);
+        this.userService.updateUserProfile(AuthUtils.getUserId(principal), request);
         return ResponseEntity.ok().body(new BaseResponse<>(true));
     }
 
@@ -67,7 +68,7 @@ public class UserApiController {
             Principal principal,
             @Valid @RequestBody ChangePasswordRequest request
     ) {
-        this.userService.changeUserPassword(Long.valueOf(principal.getName()), request);
+        this.userService.changeUserPassword(AuthUtils.getUserId(principal), request);
         return ResponseEntity.ok().body(new BaseResponse<>(true));
     }
 
@@ -82,7 +83,7 @@ public class UserApiController {
     })
     @GetMapping("/me")
     public ResponseEntity<BaseResponse<UserResponse>> findById(Principal principal) {
-        UserResponse response = this.userService.findByUserId(Long.valueOf(principal.getName()));
+        UserResponse response = this.userService.findByUserId(AuthUtils.getUserId(principal));
         return ResponseEntity.ok().body(new BaseResponse<>(response));
     }
 

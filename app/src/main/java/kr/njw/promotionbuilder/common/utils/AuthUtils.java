@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 
+import java.security.Principal;
+
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 public class AuthUtils {
@@ -27,6 +29,10 @@ public class AuthUtils {
         }
 
         return AuthUtils.getRefreshTokenCookie(request);
+    }
+
+    public static Long getUserId(Principal principal) {
+        return Long.valueOf(principal.getName());
     }
 
     private static String getBearerToken(HttpServletRequest request) {
