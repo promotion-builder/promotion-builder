@@ -77,3 +77,4 @@ app:
   main-api-host: ${APP_MAIN_API_HOST}
   sqs:
     event-queue-name: ${APP_SQS_EVENT_QUEUE_NAME}
+    user-queue-name: ${APP_SQS_USER_QUEUE_NAME}

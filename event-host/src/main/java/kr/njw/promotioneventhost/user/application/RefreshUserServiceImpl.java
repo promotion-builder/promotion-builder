@@ -1,8 +1,8 @@
-package kr.njw.promotioneventhost.event.application;
+package kr.njw.promotioneventhost.user.application;
 
 
 import io.awspring.cloud.sqs.annotation.SqsListener;
-import kr.njw.promotioneventhost.event.application.dto.UpdateEventInfoRequest;
+import kr.njw.promotioneventhost.user.application.dto.RefreshUserRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class UpdateEventInfoServiceImpl implements UpdateEventInfoService {
+public class RefreshUserServiceImpl implements RefreshUserService {
     @Override
-    @SqsListener("${app.sqs.event-queue-name}")
-    public void update(UpdateEventInfoRequest message) {
+    @SqsListener("${app.sqs.user-queue-name}")
+    public void update(RefreshUserRequest message) {
         log.info(message.toString());
 
         try {
