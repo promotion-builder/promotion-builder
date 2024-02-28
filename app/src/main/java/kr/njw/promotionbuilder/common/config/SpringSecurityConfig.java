@@ -29,7 +29,7 @@ public class SpringSecurityConfig {
             "/api/users/username",
             "/api/samples/**",
             "/user/**",
-            "/sample/**"
+            "/sample/**",
     };
 
     @Value("${app.security.master-api-key}")

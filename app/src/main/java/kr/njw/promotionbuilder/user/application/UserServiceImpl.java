@@ -1,6 +1,7 @@
 package kr.njw.promotionbuilder.user.application;
 
 
+import io.awspring.cloud.sns.core.SnsTemplate;
 import kr.njw.promotionbuilder.common.dto.BaseResponseStatus;
 import kr.njw.promotionbuilder.common.exception.BaseException;
 import kr.njw.promotionbuilder.common.security.Role;
@@ -10,6 +11,7 @@ import kr.njw.promotionbuilder.user.entity.dto.UserProfile;
 import kr.njw.promotionbuilder.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    @Value("${app.sns.user-topic-name}")
+    private final String SNS_USER_TOPIC_NAME;
+
     private final UserRepository userRepository;
     private final UserProfile.Factory userProfileFactory;
     private final PasswordEncoder passwordEncoder;
+    private final SnsTemplate snsTemplate;
 
     @Override
     @Transactional
@@ -41,6 +47,7 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         this.userRepository.saveAndFlush(user);
+        this.sendUserChangeNotification(user.getId());
 
         return SignUpResponse.builder()
                 .id(user.getId())
@@ -58,6 +65,7 @@ public class UserServiceImpl implements UserService {
 
         user.updateProfile(profile);
         this.userRepository.save(user);
+        this.sendUserChangeNotification(user.getId());
     }
 
     @Override
@@ -72,6 +80,7 @@ public class UserServiceImpl implements UserService {
 
         user.changePassword(User.createPassword(request.getNewPassword(), this.passwordEncoder));
         this.userRepository.save(user);
+        this.sendUserChangeNotification(user.getId());
     }
 
     @Override
@@ -93,5 +102,12 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public boolean isUsernameUsed(String username) {
         return this.userRepository.findByUsername(username).isPresent();
+    }
+
+    private void sendUserChangeNotification(Long userId) {
+        UserChangeNotification notification = new UserChangeNotification();
+        notification.setUserId(userId);
+
+        this.snsTemplate.sendNotification(SNS_USER_TOPIC_NAME, notification, null);
     }
 }

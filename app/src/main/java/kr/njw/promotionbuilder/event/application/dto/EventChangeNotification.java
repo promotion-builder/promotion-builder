@@ -1,4 +1,4 @@
-package kr.njw.promotionbuilder.event.application.vo;
+package kr.njw.promotionbuilder.event.application.dto;
 
 import lombok.Data;
 

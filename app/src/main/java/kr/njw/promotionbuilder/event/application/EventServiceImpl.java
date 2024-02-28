@@ -4,7 +4,6 @@ import io.awspring.cloud.sns.core.SnsTemplate;
 import kr.njw.promotionbuilder.common.dto.BaseResponseStatus;
 import kr.njw.promotionbuilder.common.exception.BaseException;
 import kr.njw.promotionbuilder.event.application.dto.*;
-import kr.njw.promotionbuilder.event.application.vo.EventChangeNotification;
 import kr.njw.promotionbuilder.event.entity.Event;
 import kr.njw.promotionbuilder.event.entity.vo.EventBlock;
 import kr.njw.promotionbuilder.event.repository.EventRepository;

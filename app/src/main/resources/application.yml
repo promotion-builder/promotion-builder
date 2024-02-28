@@ -82,3 +82,4 @@ app:
     jwt-refresh-token-duration-seconds: ${APP_JWT_REFRESH_TOKEN_DURATION_SECONDS}
   sns:
     event-topic-name: ${APP_SNS_EVENT_TOPIC_NAME}
+    user-topic-name: ${APP_SNS_USER_TOPIC_NAME}
