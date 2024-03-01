@@ -33,6 +33,8 @@ spring:
           max-concurrent-messages: 100
           max-messages-per-poll: 10
           poll-timeout: 10s
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
 
 server:
   address: 0.0.0.0
@@ -40,6 +42,7 @@ server:
   tomcat:
     max-http-form-post-size: -1
     max-swallow-size: -1
+  shutdown: graceful
 
 springdoc:
   default-consumes-media-type: application/json

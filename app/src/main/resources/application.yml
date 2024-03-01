@@ -38,6 +38,8 @@ spring:
         secret-key: ${APP_AWS_SECRET_KEY}
       sns:
         region: ${APP_SNS_REGION}
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
 
 server:
   address: 0.0.0.0
@@ -45,6 +47,7 @@ server:
   tomcat:
     max-http-form-post-size: -1
     max-swallow-size: -1
+  shutdown: graceful
 
 springdoc:
   default-consumes-media-type: application/json
