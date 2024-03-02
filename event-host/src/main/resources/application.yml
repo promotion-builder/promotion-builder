@@ -40,6 +40,10 @@ server:
   address: 0.0.0.0
   port: 8082
   tomcat:
+    threads:
+      max: 500
+      min-spare: 20
+    max-connections: 10000
     max-http-form-post-size: -1
     max-swallow-size: -1
   shutdown: graceful
