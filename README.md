@@ -14,4 +14,4 @@
 ## 🛠️ 서비스 중지시 재가동
 
 - 매일 오전 5시에 인스턴스가 일시 중지됨
-- https://d3ack3t9oqqzv2.cloudfront.net 로 접속하면 잠시 후 서비스 재가동
+- https://7slsrbnb2vfeb32zaxgo3qs6yy0jyqyz.lambda-url.ap-northeast-1.on.aws 로 접속하면 잠시 후 서비스 재가동
