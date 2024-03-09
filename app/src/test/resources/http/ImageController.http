@@ -1,0 +1,8 @@
+
+POST localhost:8080/api/image/upload2
+Content-Type: application/json
+
+##########
+
+GET localhost:8080/api/image
+Content-Type: application/json

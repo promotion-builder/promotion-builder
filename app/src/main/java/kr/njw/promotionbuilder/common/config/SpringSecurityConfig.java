@@ -70,7 +70,7 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .requestMatchers("/api/events/**").hasAnyRole(Role.USER.getValue(), Role.ADMIN.getValue())
-                .requestMatchers(userWhiteListUris).permitAll()
+                .requestMatchers("/api/image/**").permitAll()
                 .anyRequest().authenticated();
 
         httpSecurity
@@ -91,10 +91,10 @@ public class SpringSecurityConfig {
         return httpSecurity.build();
     }
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers(userWhiteListUris);
-    }
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+////        return (web) -> web.ignoring().requestMatchers("");
+//    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

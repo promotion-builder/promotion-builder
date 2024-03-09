@@ -7,3 +7,11 @@ spring:
   web:
     resources:
       static-locations: file:src/main/resources/static/
+
+imagekit:
+  private-key: ${IMAGE_PRIVATE_KEY}
+  authentication-end-point: https://api.imagekit.io/v1/auth
+  public-key: ${IMAGE_PUBLIC_KEY}
+  url-endpoint: https://upload.imagekit.io/api/v1/files/upload
+  private-restricted-key: ${IMAGE_PRIVATE_KEY}
+  public-restricted-key: ${IMAGE_PUBLIC_KEY}
